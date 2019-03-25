@@ -1,5 +1,4 @@
 import {JetView} from "webix-jet";
-import {data} from "models/records";
 
 export default class DataView extends JetView{
 	config(){
@@ -9,21 +8,13 @@ export default class DataView extends JetView{
 					view:"datatable",
 					localId: "datatable",
 					autoConfig:true,
-					css:"webix_shadow_medium"
-				},
-				{
-					view: "button",
-					value: "get status of user",
-					click: () => {
-						this.do_status();
-					}
-				},
-				{
-					view: "button",
-					value: "logout",
-					click: () => {
-						this.do_logout();
-					}
+					css:"webix_shadow_medium",
+					columns: [
+						{id: "name", header: "Name"},
+						{id: "price", header: "Price"},
+						{id: "rating", header: "Rating"},
+					],
+					url: "http://localhost:3014/products"
 				}
 			]
 		};
@@ -41,6 +32,5 @@ export default class DataView extends JetView{
 		});
 	}
 	init(){
-		this.$$("datatable").parse(data);
 	}
 }

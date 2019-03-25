@@ -56,3 +56,9 @@
 	font-size:20px;
 	vertical-align:middle;
 }
+.photo {
+	display: block;
+	padding-top: 10px;
+	width: 300px;
+	text-align: center;
+}

@@ -5,44 +5,52 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 // const User = require('./server/schemas/users');
 const UsersController = require('./server/controllers/users');
+const ProductsController = require('./server/controllers/products');
+const TypesController = require('./server/controllers/types');
+const ManufacturersController = require('./server/controllers/manufacturers');
+const ImageController = require('./server/controllers/images');
 const cors = require('cors');
 const path = require('path');
 const passport = require('passport');
 // const FileStore = require("session-file-store")(session);
 const MongoStore = require('connect-mongo')(session);
+const cookieParser = require('cookie-parser');
 
-app.use(cors());
-app.use(express.static(path.join(__dirname, '../')));
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use(express.static("public"));
-app.use(session({
-	secret: "k12jh40918e4019u3",
-	resave: true,
-	saveUninitialized: true,
-	cookie: { 
-		maxAge: 24 * 60 * 60 * 1000 
-	},
-	store: new MongoStore({
-        mongooseConnection: mongoose.connection,
-        ttl: 24 * 60 * 60 // Keeps session open for 1 day
-    })
+app.use(cors({
+	origin:['http://localhost:8080'],
+	methods:['GET','POST'],
+	credentials: true // enable set cookie
 }));
-
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(express.static("public"));
 
 app.get('/', function (req, res) {
 	res.send('Hello API');
 })
 
-mongoose.connect(`mongodb://${process.env.DB_HOST || 'localhost'}:27017/myapir`, function (err) {
+mongoose.connect(`mongodb://localhost:27017/myapir`, function (err) {
 	if (err) throw err;
 	console.log('Successfully connected');
 
-	app.use('/users', UsersController);
+	app.use(session({
+		secret: "k12jh40918e4019u3",
+		resave: false,
+		saveUninitialized: false,
+		store: new MongoStore({
+	    mongooseConnection: mongoose.connection
+	  })
+	}));
+	// app.use(express.static("public"));
+	app.use(bodyParser.json());
+	app.use(bodyParser.urlencoded({ extended: false }));
 
+	app.use(passport.initialize());
+	app.use(passport.session());
+
+	app.use('/users', UsersController);
+	app.use('/products', ProductsController);
+	app.use('/types', TypesController);
+	app.use('/manufacturers', ManufacturersController);
+	app.use('/upload', ImageController)
 	app.listen(3014, function () {
 		console.log('API app started');
 	})

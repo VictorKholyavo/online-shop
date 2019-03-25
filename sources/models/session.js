@@ -1,5 +1,5 @@
 function status() {
-  return webix.ajax().post("http://localhost:3014/users/status")
+  return webix.ajax().post("http://localhost:3014/users/login/status")
   .then(a => a.json());
 }
 

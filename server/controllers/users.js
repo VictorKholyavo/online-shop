@@ -1,8 +1,6 @@
 const express = require('express');
 const app = express();
-const session = require("express-session")
-// const jwt = require('jsonwebtoken');
-// const exjwt = require('express-jwt');
+const session = require("express-session");
 // const bcrypt = require('bcrypt');
 const User = require('../schemas/users');
 const LocalStrategy = require("passport-local").Strategy;
@@ -10,26 +8,14 @@ const LocalStrategy = require("passport-local").Strategy;
 /*  PASSPORT SETUP  */
 const passport = require('passport');
 
-app.get('/', async (req, res) => {
-	try {
-		const users = await User.find().exec();
-		res.send(users.map(user => user.toClient()));
-	} catch (error) {
-		res.status(500).send("Something broke");
-	}
-})
-
-passport.serializeUser(function (user, cb) {
-	// console.log("serialize" + user);
-	cb(null, user.id);
-});
-
-passport.deserializeUser(function (id, cb) {
-	User.findById(id, function (err, user) {
-		// console.log("deserialize" + user);
-		cb(err, user);
-	});
-});
+// app.get('/', async (req, res) => {
+// 	try {
+// 		const users = await User.find().exec();
+// 		res.send(users.map(user => user.toClient()));
+// 	} catch (error) {
+// 		res.status(500).send("Something broke");
+// 	}
+// })
 
 /* PASSPORT LOCAL AUTHENTICATION */
 
@@ -51,18 +37,18 @@ passport.use(new LocalStrategy({ usernameField: "email" },
 		});
 	}
 ));
+passport.serializeUser(function (user, cb) {
+	// console.log("serialize" + user);
+	cb(null, user.id);
+});
 
-//   const auth = (req, res, next) => {
-// 	if (req.isAuthenticated()) {
-// 		console.log(req.session);
-// 		console.log("You are in");
-// 	  	next();
-// 	} else {
-// 		console.log(req.session);
-// 		console.log("NO WAY!");
-// 	 	return res.send({a: "NO WAY!"});
-// 	}
-//   };
+passport.deserializeUser(function (id, cb) {
+	User.findById(id, function (err, user) {
+		// console.log("deserialize" + user);
+		cb(err, user);
+	});
+});
+
 
 app.post("/login", (req, res, next) => {
 	passport.authenticate('local', function(err, user) {
@@ -76,19 +62,19 @@ app.post("/login", (req, res, next) => {
 			if (err) {
 				return next(err);
 			}
-			req.session.passport = user;
-			console.log("LOGIN SESSION")
-			console.log(req.session.passport)
-			return res.send(req.session.passport);
+			res.setHeader('Access-Control-Allow-Credentials', 'true')
+			req.session.user = user;
+			req.session.save();
+
+			return res.send(req.session.user);
 		});
 	})(req, res, next);
 });
 
-app.post("/status", (req, res) => {
-	console.log("status: ")
-	console.log(req.session.passport);
-	return res.send(req.session.passport || {a: "ERROR"});
+app.post("/login/status", (req, res, next) => {
+	return res.json(req.session.user || null);
 });
+
 app.post("/logout", (req, res) => {
 	delete req.session.passport;
 	res.send({});

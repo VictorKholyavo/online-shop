@@ -2,31 +2,55 @@ import { JetView, plugins } from "webix-jet";
 
 export default class TopView extends JetView {
 	config() {
-		var header = {
-			type: "header", template: this.app.config.name, css: "webix_header app_header"
-		};
 
 		var menu = {
-			view: "menu",
-			id: "top:menu",
-			css: "app_menu",
-			width: 180,
-			layout: "y",
+			view: "tree",
+			// id: "top:menu",
+			// css: "app_menu",
+			width: 300,
+			activeTitle: true,
+			scheme: {
+				$group: "type"
+			},
+			// template: "#type#",
+			url: "http://localhost:3014/manufacturers/all",
 			select: true,
-			template: "<span class='webix_icon #icon#'></span> #value# ",
-			data: [
-				{ value: "Dashboard", id: "start", icon: "wxi-columns" },
-				{ value: "Data", id: "data", icon: "wxi-pencil" }
-			]
+			on: {
+				onItemClick: (id) => {
+					console.log(id);
+				}
+			}
 		};
 
-		var ui = {
-			type: "clean", paddingX: 5, css: "app_layout", cols: [
-				{ paddingX: 5, paddingY: 10, rows: [{ css: "webix_shadow_medium", rows: [header, menu] }] },
+		const ui = {
+			type: "clean",
+			paddingX: 5,
+			css: "app_layout",
+			rows: [
 				{
-					type: "wide", paddingY: 10, paddingX: 5, rows: [
-						{ $subview: true }
+					paddingX: 5,
+					paddingY: 10,
+					rows: [
+						{
+							type: "header",
+							view: "template",
+							localId: "header",
+							css: "webix_dark mainHeader"
+						},
+						{
+							css: "webix_shadow_medium",
+							cols: [
+								menu,
+								{ $subview:true }
+							]
+						}
 					]
+				},
+				{
+					type: "wide",
+					paddingY: 10,
+					paddingX: 5,
+					rows: []
 				}
 			]
 		};
@@ -40,7 +64,7 @@ export default class TopView extends JetView {
 		// user.status()
 	}
 	init() {
-		this.use(plugins.Menu, "top:menu");
+		// this.use(plugins.Menu, "top:menu");
 	}
 	urlChange() {
 		// this.do_status();

@@ -43,9 +43,7 @@ export default class FormView extends JetView {
 								let values = this.$$("form").getValues();
 								let email = values.email;
 								let password = values.password;
-								webix.ajax().post("http://localhost:3014/users/login", {
-									email, password
-								}).then(function (response) {
+								webix.ajax().post("http://localhost:3014/users/login", values).then(function (response) {
 									response = response.json();
 									console.log(response);
 								});
@@ -55,11 +53,12 @@ export default class FormView extends JetView {
 							view: "button",
 							value: "get admin page",
 							click: () => {
-								this.do_status();
-								// webix.ajax().post("http://localhost:3014/users/status").then(function (response) {
-								// 	response = response.json()
-								// 	console.log(response)
-								// });
+								// this.do_status();
+								webix.ajax().
+								post("http://localhost:3014/users/login/status").then(function (response) {
+									response = response.json()
+									console.log(response)
+								});
 							}
 						},
 						{
@@ -109,5 +108,10 @@ export default class FormView extends JetView {
 		return this.$$("form");
 	}
 	init() {
+		webix.attachEvent("onBeforeAjax",
+	    function(mode, url, data, request, headers, files, promise){
+	    	headers["withCredentials"] = true;
+	    }
+		);
 	}
 }

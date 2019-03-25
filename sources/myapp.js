@@ -14,10 +14,11 @@ export default class MyApp extends JetApp{
 
 		super({ ...defaults, ...config });
 
-		this.use(plugins.User, {
-			model: session,
-			login: "/login"
-		});
+		// this.use(plugins.User, {
+		// 	model: session,
+		// 	login: "/login",
+		// 	afterLogin: "/top/start"
+		// });
 	}
 }
 
