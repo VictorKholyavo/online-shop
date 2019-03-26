@@ -46,7 +46,7 @@ app.get('/all', async (req, res) => {
 		const manufacturers = await Manufacturers.find().exec();
 		for (let i = 0; i < manufacturers.length; i++) {
 			await Types.findById(manufacturers[i].type, function (err, docs) {
-				manufacturers[i].type = docs.value;
+				manufacturers[i].typeByString = docs.value;
 			})
 		}
 		res.send(manufacturers.map(manufacture => manufacture.toClient()));

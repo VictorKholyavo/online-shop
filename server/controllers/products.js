@@ -12,30 +12,6 @@ app.get('/', async (req, res) => {
 	}
 })
 
-app.get('/tree', async (req, res) => {
-	try {
-		const products = await Products.find().exec();
-		let productsLength = products.length;
-		let treeData = [];
-		console.log(products);
-		for (let i = 0; i < productsLength; i++) {
-			treeData.push({type: products[i].type, manufacturer: products[i].manufacturer})
-		}
-		var obj = {};
-
-		for ( let i = 0; i < treeData.length; i++ )
-		    obj[treeData[i].manufacturer] = treeData[i];
-		treeData = [];
-
-		for ( var key in obj )
-		    treeData.push(obj[key]);
-		console.log(treeData);
-		res.send(treeData.map(tree => tree.toClient()));
-	} catch (error) {
-		res.status(500).send("Something broke");
-	}
-})
-
 app.get('/words', async (req, res) => {
 	try {
 		await User.findUserByToken(req.headers.authorization, async (err, userInfo) => {

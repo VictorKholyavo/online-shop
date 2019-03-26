@@ -120,27 +120,19 @@ export default class FormforProductView extends JetView {
 			response = response.json();
 			console.log(response._id);
 		});
-		// let manufacturers = [
-		// 	{value: "iPhone", type: "Phone"},
-		// 	{value: "Samsung", type: "Phone"},
-		// 	{value: "Huawei", type: "Phone"},
-		// 	{value: "HP", type: "Notebooks"},
-		// 	{value: "Acer", type: "Notebooks"},
-		// 	{value: "Asus", type: "Notebooks"},
-		// 	{value: "Sony", type: "TV"}
-		// ]
-		// for (let i = 0; i < manufacturers.length; i++) {
-		// 	webix.ajax().post("http://localhost:3014/manufacturers", manufacturers[i]).then(function (response) {
-		// 		response = response.json();
-		// 		console.log(response);
-		// 	});
-		// }
 	}
 	saveProduct(values) {
-		webix.ajax().post("http://localhost:3014/products", values).then(function (response) {
-			response = response.json();
-			console.log(response);
-		});
+		if (this.$getForm().validate()) {
+			webix.ajax().post("http://localhost:3014/products", values).then(function (response) {
+				response = response.json();
+				console.log(response);
+			});
+			this.$getForm().clear();
+			this.$getForm().clearValidation();
+		}
+		else {
+			webix.message({ type:"error", text:"Invalid info" });
+		}
 	}
 	showWindow(values, filled) {
 		let formTemplate = this.$$("formTemplate");

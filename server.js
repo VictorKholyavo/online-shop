@@ -9,6 +9,7 @@ const ProductsController = require('./server/controllers/products');
 const TypesController = require('./server/controllers/types');
 const ManufacturersController = require('./server/controllers/manufacturers');
 const ImageController = require('./server/controllers/images');
+const BagController = require('./server/controllers/bag');
 const cors = require('cors');
 const path = require('path');
 const passport = require('passport');
@@ -50,7 +51,8 @@ mongoose.connect(`mongodb://localhost:27017/myapir`, function (err) {
 	app.use('/products', ProductsController);
 	app.use('/types', TypesController);
 	app.use('/manufacturers', ManufacturersController);
-	app.use('/upload', ImageController)
+	app.use('/upload', ImageController);
+	app.use('/bag', BagController);
 	app.listen(3014, function () {
 		console.log('API app started');
 	})

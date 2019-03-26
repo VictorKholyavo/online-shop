@@ -1,28 +1,27 @@
 const express = require('express');
 let app = express();
-const mongoose = require('mongoose');
-const Types = require('../schemas/types');
-const Manufacturers = require('../schemas/manufacturers');
+const Orders = require('../schemas/orders');
 
 app.get('/', async (req, res) => {
 	try {
-		const types = await Types.find().exec();
-			res.json(types.map(type => type.toClient()));
+		const orders = await Orders.find().exec();
+			res.json(orders.map(order => order.toClient()));
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}
 })
 
-app.post('/startData', async (req, res) => {
+app.post('/add', async (req, res) => {
 	try {
-		let startDataTypes = ["Phones", "Notebooks", "TV"]
-		for (let i = 0; i < startDataTypes.length; i++) {
-			let newType = await new Types({
-				value: startDataTypes[i]
-			});
-			newType.save();
-		}
-		return res.json(startDataTypes)
+		console.log(req.body);
+		return res.send(req.body)
+		// for (let i = 0; i < startDataTypes.length; i++) {
+		// 	let newType = await new Types({
+		// 		value: startDataTypes[i]
+		// 	});
+		// 	newType.save();
+		// }
+		// return res.json(startDataTypes)
 
 	} catch (error) {
 		res.status(500).send("Something broke");
