@@ -59,7 +59,15 @@ export default class DataView extends JetView{
 						console.log(products);
 						let form = this.FormForOrderView
 						this.FormForOrderView.showWindow("", function(data) {
-							console.log(data);
+							for (let i = 0; i < products.length; i++) {
+								data.productId = products[i].id;
+								data.amount = products[i].amount;
+								console.log(data);
+								webix.ajax().post("http://localhost:3014/orders/add", data).then(function (response) {
+									response = response.json();
+									console.log(response);
+								});
+							}
 							form.hideOrNotHide();
 						});
 					}

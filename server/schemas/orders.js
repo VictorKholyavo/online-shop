@@ -39,8 +39,9 @@ const OrderSchema = new Schema({
     required: true
 	},
 	date: {
-		default: new Date()
-	},
+    type: Date,
+    default: Date.now,
+  },
 	status: {
 		type: String,
     default: "In process"

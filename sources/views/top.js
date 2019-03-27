@@ -43,7 +43,8 @@ export default class TopView extends JetView {
 								{ view: "template", template: "Hi, ", width: 140 },
 								{ view: "button", value: "Logout", width: 150},
 								{ view: "button", value: "History", width: 150},
-								{ view: "button", value: "Bag", localId: "bag", width: 150, click: () => {this.show("/top/bag")}}
+								{ view: "button", value: "Bag", localId: "bag", width: 150, click: () => {this.show("/top/bag")}},
+								{ view: "button", value: "LOCAL STORAGE", localId: "bag", width: 150, click: () => {console.log(webix.storage.local.get("tokenOfUser").token)}},
 							],
 							css: "webix_dark"
 						},
@@ -78,6 +79,17 @@ export default class TopView extends JetView {
 	}
 	init() {
 		// this.use(plugins.Menu, "top:menu");
+		// webix.attachEvent("onBeforeAjax",
+		// 	function(mode, url, data, request, headers) {
+		// 		if (webix.storage.local.get("tokenOfUser")) {
+		// 			let token = webix.storage.local.get("tokenOfUser")
+		// 			console.log(webix.storage.local.get("tokenOfUser"));
+		// 			headers["Authorization"] = "bearer " + token;
+		// 			console.log(headers);
+		// 		}
+		// 	}
+		// );
+
 		if (webix.storage.local.get("bag")) {
 			let data = webix.storage.local.get("bag");
 			this.$getBag().define({value: "Bag ("+data+")"});
@@ -88,6 +100,7 @@ export default class TopView extends JetView {
 			this.$getBag().define({value: "Bag ("+data+")"});
 			this.$getBag().refresh();
 		});
+
 	}
 	urlChange() {
 		// this.do_status();

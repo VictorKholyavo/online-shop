@@ -3,6 +3,7 @@ let app = express();
 const mongoose = require('mongoose');
 const Types = require('../schemas/types');
 const Manufacturers = require('../schemas/manufacturers');
+const passport = require('passport');
 
 app.get('/', async (req, res) => {
 	try {

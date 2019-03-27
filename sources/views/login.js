@@ -29,7 +29,6 @@ export default class FormView extends JetView {
 								console.log(values);
 								webix.ajax().post("http://localhost:3014/users/registration", values).then(function (response) {
 									response = response.json();
-									console.log(response);
 								});
 							}
 						},
@@ -39,37 +38,34 @@ export default class FormView extends JetView {
 							value: "Login",
 							hotkey: "Enter",
 							click: () => {
-								// this.do_login();
-								let values = this.$$("form").getValues();
-								let email = values.email;
-								let password = values.password;
-								webix.ajax().post("http://localhost:3014/users/login", values).then(function (response) {
-									response = response.json();
-									console.log(response);
-								});
+								this.do_login();
+								// let values = this.$$("form").getValues();
+								// let email = values.email;
+								// let password = values.password;
+								// webix.ajax().post("http://localhost:3014/users/login", values).then(function (response) {
+								// 	response = response.json();
+								// 	console.log(response);
+								// 	webix.storage.local.put("tokenOfUser", response.token);
+								// });
 							}
 						},
 						{
 							view: "button",
 							value: "get admin page",
 							click: () => {
-								// this.do_status();
-								webix.ajax().
-								post("http://localhost:3014/users/login/status").then(function (response) {
-									response = response.json()
-									console.log(response)
-								});
+								this.do_status();
+								// webix.ajax().post("http://localhost:3014/users/login/status").then(function (response) {
+								// 	response = response.json()
+								// 	console.log(response)
+								// });
 							}
 						},
 						{
 							view: "button",
 							value: "logout",
 							click: () => {
+								webix.storage.local.remove("tokenOfUser");
 								this.do_logout();
-								// webix.ajax().post("http://localhost:3014/users/status").then(function (response) {
-								// 	response = response.json()
-								// 	console.log(response)
-								// });
 							}
 						}
 					]
@@ -100,8 +96,6 @@ export default class FormView extends JetView {
 	do_status() {
 		const user = this.app.getService("user");
 		user.getStatus();
-		console.log(user);
-		console.log(user.getStatus());
 		// user.status()
 	}
 	$getForm() {
@@ -109,9 +103,11 @@ export default class FormView extends JetView {
 	}
 	init() {
 		webix.attachEvent("onBeforeAjax",
-	    function(mode, url, data, request, headers, files, promise){
-	    	headers["withCredentials"] = true;
-	    }
+			function(mode, url, data, request, headers) {
+				if (webix.storage.local.get("tokenOfUser")) {
+					headers["Authorization"] = "bearer " + webix.storage.local.get("tokenOfUser");
+				}
+			}
 		);
 	}
 }

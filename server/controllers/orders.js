@@ -16,7 +16,7 @@ app.post('/add', async (req, res) => {
 		console.log(req.body);
 		return res.send(req.body)
 		// for (let i = 0; i < startDataTypes.length; i++) {
-		// 	let newType = await new Types({
+		// 	let newType = await new Types({ 
 		// 		value: startDataTypes[i]
 		// 	});
 		// 	newType.save();

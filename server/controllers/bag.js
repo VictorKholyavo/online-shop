@@ -21,18 +21,11 @@ app.get('/user', async (req, res) => {
 			product.sum = product.price * product.amount
 			sendData.push(product)
 		}
-		res.send(sendData.map(doc => doc.toClient()))
-		// product[0].amount = userBag[0].productId;
-		// for (let i = 0; i < bags.length; i++) {
-		// 	await Bag.findProduct(bags[i].productId, function(err, userProduct) {
-		// 		userBag.push(userProduct);
-		// 		userBag[i].amount = bags[i].amount;
-		//
-		// 	})
-		// 	console.log(userBag);
-		// }
-		// return res.send(bags.map(bag => bag.toClient()));
-		// res.json(product.map(bag => bag.toClient()));
+		return res.send(sendData.map(function(prod) {
+			prod.id = prod._id.toHexString();
+			delete prod._id;
+			return prod;
+		}));
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}
