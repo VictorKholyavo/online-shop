@@ -3,18 +3,11 @@ const Schema = mongoose.Schema;
 const Products = require('../schemas/products');
 
 const BagSchema = new Schema({
-	// buyerId: {
-	// 	type: String,
-	// 	required: true
-	// },
-	productId: {
+	buyerId: {
 		type: String,
-    required: true
+		required: true
 	},
-	amount: {
-		type: Number,
-    required: true
-	}
+	products: []
 });
 
 BagSchema.methods.toClient = function toClient() {

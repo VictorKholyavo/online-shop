@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const OrderSchema = new Schema({
-	product: {
+	productId: {
 		type: String,
     required: true
 	},
@@ -10,10 +10,10 @@ const OrderSchema = new Schema({
 		type: Number,
     required: true
 	},
-	// buyerId: {
-	// 	type: String,
-	// 	required: true
-	// },
+	buyerId: {
+		type: String,
+		required: true
+	},
 	buyerName: {
 		type: String,
     required: true

@@ -35,6 +35,12 @@ export default class DataView extends JetView{
 					select: true,
 					onClick: {
 						"wxi-trash": (e, id) => {
+							let values = this.$$("datatable").getItem(id);
+							console.log(values.id);
+							webix.ajax().put("http://localhost:3014/bag/removeProduct", {orderId: values.id}).then(function (response) {
+								response = response.json();
+								console.log(response);
+							});
 							// let values = this.$$("datatable").getItem(id);
 							// if (values.amountCounter !== undefined) {
 							// 	if (!webix.storage.local.get("bag")) {
@@ -54,20 +60,36 @@ export default class DataView extends JetView{
 					view: "button",
 					value: "Make order",
 					click: () => {
-						// webix.storage.local.remove("bag");
+
 						let products = this.$getDatatable().data.pull;
-						console.log(products);
-						let form = this.FormForOrderView
-						this.FormForOrderView.showWindow("", function(data) {
-							for (let i = 0; i < products.length; i++) {
-								data.productId = products[i].id;
-								data.amount = products[i].amount;
-								console.log(data);
+						let ordersInDatatable = this.$getDatatable().data.order;
+						let form = this.FormForOrderView;
+						let sendData = [];
+						console.log(webix.storage.local.get("UserInfo"));
+						this.FormForOrderView.showWindow("", (data) => {
+							for (var i = 0; i < ordersInDatatable.length; i++) {
+								data.buyerId = webix.storage.local.get("UserInfo").userId;
+								data.productId = products[ordersInDatatable[i]].productId;
+								data.amount = products[ordersInDatatable[i]].amount;
 								webix.ajax().post("http://localhost:3014/orders/add", data).then(function (response) {
 									response = response.json();
 									console.log(response);
 								});
+								// webix.storage.local.remove("bag");
 							}
+							// webix.ajax().get("http://localhost:3014/bag/user").then(function (response) {
+							// 	response = response.json();
+							// 	return response
+							// }).then(function (bag) {
+							// 	for (let i = 0; i < bag.length; i++) {
+							// 		data.productId = bag[i].productId;
+							// 		console.log(bag[i].productId);
+							// 		sendData.push(data)
+							// 		console.log(sendData);
+							//
+							// 		// console.log(bag[i].productId);
+							// 	}
+							// });
 							form.hideOrNotHide();
 						});
 					}

@@ -19,11 +19,13 @@ const passport = require('passport');
 const MongoStore = require('connect-mongo')(session);
 const cookieParser = require('cookie-parser');
 
-app.use(cors({
-	origin:['http://127.0.0.1:8080'],
-	methods:['GET','POST'],
-	credentials: true // enable set cookie
-}));
+app.use(cors(
+	// {
+	// 	origin:['http://127.0.0.1:8080'],
+	// 	methods:['GET','POST'],
+	// 	credentials: true // enable set cookie
+	// }
+));
 // app.use(express.static("public"));
 // app.use(ejwt({secret: "secret for token", userProperty: 'tokenPayload'}).unless({path: ['/users/login']}));
 // app.use(ejwt({
@@ -52,7 +54,7 @@ mongoose.connect(`mongodb://localhost:27017/myapir`, function (err) {
 	//     mongooseConnection: mongoose.connection
 	//   })
 	// }));
-	// app.use(express.static("public"));
+	app.use(express.static("public"));
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -62,7 +64,7 @@ mongoose.connect(`mongodb://localhost:27017/myapir`, function (err) {
 	// app.use('/users', UsersController);
 	app.use('/users', UsersController);
 	app.use('/products', passport.authenticate('jwt', {session: false}), ProductsController);
-	app.use('/types', passport.authenticate('jwt', {session: false}), TypesController);
+	app.use('/types', TypesController);
 	app.use('/manufacturers', ManufacturersController);
 	app.use('/upload', ImageController);
 	app.use('/bag', BagController);

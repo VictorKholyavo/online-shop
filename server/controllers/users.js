@@ -3,6 +3,7 @@ const app = express();
 const session = require("express-session");
 // const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const Bag = require('../schemas/bag');
 const User = require('../schemas/users');
 const LocalStrategy = require("passport-local").Strategy;
 const passportJWT = require("passport-jwt");
@@ -26,7 +27,7 @@ passport.use(new JWTStrategy({
       secretOrKey   : "secret for token"
     },
     function (jwtPayload, cb) {
-			// console.log(jwtPayload);
+			console.log(jwtPayload);
       //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
 
 			// return cb(null, jwtPayload.id)
@@ -41,8 +42,6 @@ passport.use(new JWTStrategy({
 ));
 passport.use(new LocalStrategy({ usernameField: "email" },
 	function (username, password, done) {
-		console.log('adsdasdas23');
-
 		User.findOne({
 			email: username
 		}, function (err, user) {
@@ -78,12 +77,9 @@ passport.use(new LocalStrategy({ usernameField: "email" },
 // });
 
 app.post("/login", (req, res, next) => {
-	console.log('11212231123');
-
 	passport.authenticate('local', {session: false},
 		function(err, user) {
 			if (err) {
-				console.log(err);
 				return next(err);
 			}
 		if (!user) {
@@ -91,39 +87,28 @@ app.post("/login", (req, res, next) => {
 		}
 		req.logIn(user, {session: false}, function(err) {
 			if (err) {
-				console.log(err);
-
 				return next(err);
 			}
 			// res.setHeader('Access-Control-Allow-Credentials', 'true')
 
-			// req.session.user = user;
-			// req.session.save();
 			const token = jwt.sign({id: user._id}, "secret for token")
-
       return res.json({userId: user._id, token: token});
 		});
 	})(req, res, next);
 });
 
 app.post("/login/status", async (req, res, next) => {
-	// console.log(req.user._id);
-	// console.log(req.headers);
-	// console.log(req.headers.authorization);
-	// "5c98984907e5c70f70f19d32"
-	if (req.headers.authorization) {
+	if (req.headers.authorization.split(' ')[1] !== "null") {
 		let token = req.headers.authorization.split(' ')[1]
 		decoded = jwt.verify(token, "secret for token");
-		console.log(decoded.id);
-		return res.json(decoded.id);
+		return res.json({userId: decoded.id, token: token});
 	}
-	console.log('here');
 	return res.json(null);
 });
 
 app.post("/logout", (req, res) => {
 	req.logout();
-	res.send({});
+	res.json({});
 });
 
 app.post('/registration', async (req, res) => {
@@ -133,7 +118,16 @@ app.post('/registration', async (req, res) => {
 				email: req.body.email,
 				password: req.body.password
 			});
-			newUser.save();
+
+			newUser.save(function (err, docs) {
+				let addUserBag = new Bag({
+					buyerId: docs._id,
+					productId: req.body.productId,
+					amount: req.body.amount
+				});
+				addUserBag.save();
+			});
+
 		}
 	}
 	catch (error) {

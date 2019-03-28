@@ -59,11 +59,11 @@
 .photo {
 	display: block;
 	padding-top: 10px;
-	width: 250px;
+	width: 150px;
 	text-align: center;
 }
 .smallPhoto {
-	width: 75px;
+	width: 37px;
 }
 
 .defaultPhoto {

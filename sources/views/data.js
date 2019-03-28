@@ -38,9 +38,8 @@ export default class DataView extends JetView{
 							let values = this.$$("datatable").getItem(id);
 							if (values.amountCounter !== undefined) {
 								let data = {productId: values.id, amount: values.amountCounter};
-								webix.ajax().post("http://localhost:3014/bag/add", data).then(function (response) {
+								webix.ajax().put("http://localhost:3014/bag/addProduct", data).then(function (response) {
 									response = response.json();
-									console.log(response);
 								});
 
 								if (!webix.storage.local.get("bag")) {

@@ -41,10 +41,10 @@ export default class TopView extends JetView {
 								{ view: "template", template: "Online shop", width: 140 },
 								{},
 								{ view: "template", template: "Hi, ", width: 140 },
-								{ view: "button", value: "Logout", width: 150},
+
+								{ view: "button", value: "Logout", width: 150, click: () => {this.do_logout(); window.location.reload(true); }},
 								{ view: "button", value: "History", width: 150},
-								{ view: "button", value: "Bag", localId: "bag", width: 150, click: () => {this.show("/top/bag")}},
-								{ view: "button", value: "LOCAL STORAGE", localId: "bag", width: 150, click: () => {console.log(webix.storage.local.get("tokenOfUser").token)}},
+								{ view: "button", value: "Bag", localId: "bag", width: 150, click: () => {this.show("/top/bag")}}
 							],
 							css: "webix_dark"
 						},
@@ -77,18 +77,22 @@ export default class TopView extends JetView {
 		console.log(user);
 		// user.status()
 	}
+	do_logout() {
+		const user = this.app.getService("user");
+		user.logout().catch(function () {
+			//error handler
+		});
+	}
 	init() {
 		// this.use(plugins.Menu, "top:menu");
-		// webix.attachEvent("onBeforeAjax",
-		// 	function(mode, url, data, request, headers) {
-		// 		if (webix.storage.local.get("tokenOfUser")) {
-		// 			let token = webix.storage.local.get("tokenOfUser")
-		// 			console.log(webix.storage.local.get("tokenOfUser"));
-		// 			headers["Authorization"] = "bearer " + token;
-		// 			console.log(headers);
-		// 		}
-		// 	}
-		// );
+		webix.attachEvent("onBeforeAjax",
+			function(mode, url, data, request, headers) {
+				if (webix.storage.local.get("UserInfo")) {
+					let token = webix.storage.local.get("UserInfo").token;
+					headers["authorization"] = "bearer " + token;
+				}
+			}
+		);
 
 		if (webix.storage.local.get("bag")) {
 			let data = webix.storage.local.get("bag");
@@ -96,7 +100,6 @@ export default class TopView extends JetView {
 			this.$getBag().refresh();
 		}
 		this.on(this.app, "addProductToBag", (data) => {
-			console.log(data);
 			this.$getBag().define({value: "Bag ("+data+")"});
 			this.$getBag().refresh();
 		});
