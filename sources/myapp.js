@@ -22,21 +22,40 @@ export default class MyApp extends JetApp {
 				if (webix.storage.local.get("UserInfo")) {
 					let token = webix.storage.local.get("UserInfo").token
 					headers["authorization"] = "bearer " + token;
-					console.log(headers);
 				}
 			}
 		);
 		this.use(plugins.User, {
 			model: session,
-			login: "/login",
-			afterLogin: "/top/data",
-			// public: path => path.indexOf("/top/data") > -1
 		});
-
-		// this.attachEvent("app:guard", function(url, view, nav){
-		// 	if (url.indexOf("/top") !== -1)
-		// 		nav.redirect="/login";
-		// })
+		function getUser() {
+			return webix.ajax().sync().get("http://localhost:3014/users/getInfo").response;
+		}
+		this.attachEvent("app:guard", function(url, view, nav) {
+			try {
+				let userInfo = JSON.parse(getUser());
+				if (userInfo.admin) {
+					if (url.indexOf("/top") !== -1) {
+						nav.redirect = "/adminMenu/clientsInfo"
+					}
+				}
+				else {
+					if (url.indexOf("/adminMenu") !== -1) {
+						nav.redirect = "/top/data"
+					}
+				}
+			} catch (err) {
+				console.log("You are not logged");
+			}
+		});
+		webix.attachEvent("onBeforeAjax",
+			function(mode, url, data, request, headers) {
+				if (webix.storage.local.get("UserInfo")) {
+					let token = webix.storage.local.get("UserInfo").token;
+					headers["authorization"] = "bearer " + token;
+				}
+			}
+		);
 	}
 }
 

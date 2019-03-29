@@ -38,18 +38,8 @@ export default class DataView extends JetView{
 							let values = this.$$("datatable").getItem(id);
 							if (values.amountCounter !== undefined) {
 								let data = {productId: values.id, amount: values.amountCounter};
-								webix.ajax().put("http://localhost:3014/bag/addProduct", data).then(function (response) {
-									response = response.json();
-								});
-
-								if (!webix.storage.local.get("bag")) {
-									webix.storage.local.put("bag", 1);
-								}
-								else {
-									webix.storage.local.put("bag", webix.storage.local.get("bag") + 1);
-								}
-								let bag = webix.storage.local.get("bag")
-								this.app.callEvent("addProductToBag", [bag]);
+								webix.ajax().put("http://localhost:3014/bag/addProduct", data);
+								this.app.callEvent("addProductToBag", []);
 								webix.message({text: values.amountCounter + " " + values.name + " has been added to your bag"});
 							}
 						},

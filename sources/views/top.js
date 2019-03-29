@@ -16,6 +16,7 @@ export default class TopView extends JetView {
 			select: true,
 			on: {
 				onItemClick: (id) => {
+					this.show("/top/data")
 					let level = this.$$("tree").getItem(id).$level;
 					let data = [level, id];
 					this.app.callEvent("filterDatatableByTypeAndManufacture", [data]);
@@ -41,9 +42,8 @@ export default class TopView extends JetView {
 								{ view: "template", template: "Online shop", width: 140 },
 								{},
 								{ view: "template", template: "Hi, ", width: 140 },
-
 								{ view: "button", value: "Logout", width: 150, click: () => {this.do_logout(); window.location.reload(true); }},
-								{ view: "button", value: "History", width: 150},
+								{ view: "button", value: "History", width: 150, click: () => {this.show("/top/history")}},
 								{ view: "button", value: "Bag", localId: "bag", width: 150, click: () => {this.show("/top/bag")}}
 							],
 							css: "webix_dark"
@@ -71,41 +71,27 @@ export default class TopView extends JetView {
 	$getBag() {
 		return this.$$("bag")
 	}
-	do_status() {
-		const user = this.app.getService("user");
-		user.getStatus();
-		console.log(user);
-		// user.status()
-	}
 	do_logout() {
 		const user = this.app.getService("user");
 		user.logout().catch(function () {
 			//error handler
 		});
 	}
-	init() {
-		// this.use(plugins.Menu, "top:menu");
-		webix.attachEvent("onBeforeAjax",
-			function(mode, url, data, request, headers) {
-				if (webix.storage.local.get("UserInfo")) {
-					let token = webix.storage.local.get("UserInfo").token;
-					headers["authorization"] = "bearer " + token;
-				}
-			}
-		);
-
-		if (webix.storage.local.get("bag")) {
-			let data = webix.storage.local.get("bag");
-			this.$getBag().define({value: "Bag ("+data+")"});
-			this.$getBag().refresh();
-		}
-		this.on(this.app, "addProductToBag", (data) => {
-			this.$getBag().define({value: "Bag ("+data+")"});
-			this.$getBag().refresh();
+	refresh_bag_button() {
+		let bag = this.$$("bag")
+		webix.ajax().get("http://localhost:3014/bag/user").then(function (response) {
+			response = response.json();
+			bag.define({value: "Bag ("+response.length+")"});
+			bag.refresh();
+			return response.length
 		});
-
+	}
+	init() {
+		this.on(this.app, "addProductToBag", () => {
+			this.refresh_bag_button();
+		});
 	}
 	urlChange() {
-		// this.do_status();
+		this.refresh_bag_button();
 	}
 }

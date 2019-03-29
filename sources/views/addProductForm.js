@@ -100,7 +100,8 @@ export default class FormforProductView extends JetView {
 				{
 					view: "button",
 					localId: "addType",
-					value: "Add Type",
+					type: "form",
+					value: "Add Types and Manufactures of Products (start data)",
 					click: () => {
 						this.addStartData();
 					}
@@ -112,14 +113,17 @@ export default class FormforProductView extends JetView {
 		};
 	}
 	addStartData() {
-		webix.ajax().post("http://localhost:3014/types/startData", []).then(function (response) {
-			response = response.json();
-			console.log(response._id);
-		});
-		webix.ajax().post("http://localhost:3014/manufacturers/startData", []).then(function (response) {
-			response = response.json();
-			console.log(response._id);
-		});
+		webix.ajax().post("http://localhost:3014/types/startData", []).then(
+			webix.ajax().post("http://localhost:3014/manufacturers/startData", []).then(
+				webix.ajax().post("http://localhost:3014/statuses/startData", []).then(
+					webix.ajax().post("http://localhost:3014/payment/startData", []).then(
+						webix.ajax().post("http://localhost:3014/delivery/startData", []).then()
+					)
+				)
+			)
+		)
+
+
 	}
 	saveProduct(values) {
 		if (this.$getForm().validate()) {

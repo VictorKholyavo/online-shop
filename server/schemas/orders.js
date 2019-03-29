@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const Statuses = require('../schemas/statuses');
 
 const OrderSchema = new Schema({
 	productId: {
@@ -35,16 +36,14 @@ const OrderSchema = new Schema({
     required: true
 	},
 	payment: {
-		type: String,
-    required: true
+		type: String
 	},
 	date: {
     type: Date,
     default: Date.now,
   },
 	status: {
-		type: String,
-    default: "In process"
+		type: String
 	}
 });
 
@@ -55,7 +54,21 @@ OrderSchema.methods.toClient = function toClient() {
   delete obj._id;
   return obj;
 }
-
+OrderSchema.statics.findStatus = function findStatus(id, callback) {
+	Statuses.findById(
+		id,
+		function (err, doc) {
+			//doc.findByToken()
+			if (err) {
+				let error = "No statuses found";
+				return callback(error);
+			}
+			else {
+				return callback(null, doc)
+			}
+		}
+	);
+}
 // Компилируем модель из схемы
 const Order = mongoose.model('Order', OrderSchema);
 

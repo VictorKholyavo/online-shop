@@ -6,7 +6,11 @@ const session = require('express-session');
 const ejwt = require('express-jwt');
 // const User = require('./server/schemas/users');
 const UsersController = require('./server/controllers/users');
+const AdminsController = require('./server/controllers/admins');
 const ProductsController = require('./server/controllers/products');
+const StatusesController = require('./server/controllers/statuses');
+const PaymentController = require('./server/controllers/payment');
+const DeliveryController = require('./server/controllers/delivery');
 const TypesController = require('./server/controllers/types');
 const ManufacturersController = require('./server/controllers/manufacturers');
 const ImageController = require('./server/controllers/images');
@@ -26,19 +30,7 @@ app.use(cors(
 	// 	credentials: true // enable set cookie
 	// }
 ));
-// app.use(express.static("public"));
-// app.use(ejwt({secret: "secret for token", userProperty: 'tokenPayload'}).unless({path: ['/users/login']}));
-// app.use(ejwt({
-//   secret: 'secret for token',
-// 	userProperty: 'tokenPayload',
-//   credentialsRequired: false,
-//   getToken: function fromHeaderOrQuerystring (req) {
-//     if (req.headers.authorization) {
-//         return req.headers.authorization;
-//     }
-//     return null;
-//   }
-// }).unless({path: ['/users/login']}));
+
 app.get('/', function (req, res) {
 	res.send('Hello API');
 })
@@ -46,14 +38,7 @@ app.get('/', function (req, res) {
 mongoose.connect(`mongodb://localhost:27017/myapir`, function (err) {
 	if (err) throw err;
 	console.log('Successfully connected');
-	// app.use(session({
-	// 	secret: "k12jh40918e4019u3",
-	// 	resave: false,
-	// 	saveUninitialized: false,
-	// 	store: new MongoStore({
-	//     mongooseConnection: mongoose.connection
-	//   })
-	// }));
+
 	app.use(express.static("public"));
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({ extended: false }));
@@ -61,14 +46,17 @@ mongoose.connect(`mongodb://localhost:27017/myapir`, function (err) {
 	app.use(passport.initialize());
 	app.use(passport.session());
 
-	// app.use('/users', UsersController);
 	app.use('/users', UsersController);
+	app.use('/admins', AdminsController);
 	app.use('/products', passport.authenticate('jwt', {session: false}), ProductsController);
+	app.use('/statuses', passport.authenticate('jwt', {session: false}), StatusesController);
+	app.use('/payment', passport.authenticate('jwt', {session: false}), PaymentController);
+	app.use('/delivery', passport.authenticate('jwt', {session: false}), DeliveryController);
 	app.use('/types', TypesController);
-	app.use('/manufacturers', ManufacturersController);
-	app.use('/upload', ImageController);
+	app.use('/manufacturers', passport.authenticate('jwt', {session: false}), ManufacturersController);
+	app.use('/upload', passport.authenticate('jwt', {session: false}), ImageController);
 	app.use('/bag', BagController);
-	app.use('/orders', OrderController);
+	app.use('/orders', passport.authenticate('jwt', {session: false}), OrderController);
 	app.listen(3014, function () {
 		console.log('API app started');
 	})

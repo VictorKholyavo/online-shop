@@ -38,7 +38,7 @@ export default class FormForOrderView extends JetView {
 					view: "richselect",
 					name: "delivery",
 					label: "Delivery type",
-					options: ["Master", "Pickup"]
+					options: "http://localhost:3014/delivery"
 				},
 				{
 					view: "text",
@@ -49,7 +49,8 @@ export default class FormForOrderView extends JetView {
 					view: "richselect",
 					name: "payment",
 					label: "Payment type",
-					options: ["Cash", "Card"]
+					options: "http://localhost:3014/payment"
+
 				},
 				{
 					view: "button",

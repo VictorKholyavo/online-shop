@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const passport = require('passport');
 const express = require('express');
 const app = express();
 const jwt = require('jsonwebtoken');
@@ -29,12 +30,24 @@ app.get('/user', async (req, res) => {
 			oneOrder.sum = oneOrder.price * oneOrder.amount;
 			sendData.push(oneOrder)
 		}
-		return res.send(sendData.map(function(prod) {
+		return res.json(sendData.map(function(prod) {
 			prod.id = prod._id.toHexString();
 			delete prod._id;
 			return prod;
 		}));
 	} catch (error) {
+		res.status(500).send("Something broke");
+	}
+});
+
+app.get('/user/count', passport.authenticate('jwt', {session: false}), async (req, res) => {
+	try {
+		console.log(req.user._id);
+		const userBag = await Bag.findOne({buyerId: req.user._id}).exec();
+		console.log(userbag);
+		return res.send(userBag)
+	}
+	catch (error) {
 		res.status(500).send("Something broke");
 	}
 });
@@ -65,14 +78,12 @@ app.put('/addProduct', async (req, res) => {
 	}
 });
 
-app.put('/removeProduct', async (req, res) => {
+app.delete('/user/:id', passport.authenticate('jwt', {session: false}), async (req, res) => {
 	try {
-		let token = req.headers.authorization.split(' ')[1];
-		let decoded = jwt.verify(token, "secret for token");
-		let orderId = mongoose.Types.ObjectId(req.body.orderId);
-
+		console.log(req.body);
+		let orderId = mongoose.Types.ObjectId(req.body.id);
 		await Bag.findOneAndUpdate(
-			{ buyerId: decoded.id },
+			{ buyerId: req.user._id },
 			{
 				$pull: {
 					products: {_id: orderId}
@@ -82,10 +93,25 @@ app.put('/removeProduct', async (req, res) => {
 				new: true
 			},
 			function (err, docs) {
-				console.log(docs);
+				return res.json(docs.id);
 			}
 		);
-		return res.send({});
+	} catch (e) {
+
+	}
+});
+
+app.put('/user/clearBag', passport.authenticate('jwt', {session: false}), async (req, res) => {
+	try {
+		let orderId = mongoose.Types.ObjectId(req.body.id);
+		await Bag.findOneAndUpdate(
+			{ buyerId: req.user._id },
+			{
+				$set: {
+					products: []
+				}
+			}
+		);
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}

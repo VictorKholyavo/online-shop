@@ -39,6 +39,18 @@ export default class FormView extends JetView {
 							click: () => {
 								this.do_login();
 							}
+						},
+						{
+							view: "button",
+							localId: "adminButton",
+							value: "Register as admin",
+							click: () => {
+								let values = this.$$("form").getValues();
+								webix.ajax().post("http://localhost:3014/admins/addadmin", values).then(function (response) {
+									response = response.json();
+									console.log(response);
+								});
+							}
 						}
 					]
 				}
@@ -63,12 +75,12 @@ export default class FormView extends JetView {
 		return this.$$("form");
 	}
 	init() {
-		webix.attachEvent("onBeforeAjax",
-			function(mode, url, data, request, headers) {
-				if (webix.storage.local.get("UserInfo")) {
-					headers["authorization"] = "bearer " + webix.storage.local.get("UserInfo").token;
-				}
-			}
-		);
+		// webix.attachEvent("onBeforeAjax",
+		// 	function(mode, url, data, request, headers) {
+		// 		if (webix.storage.local.get("UserInfo")) {
+		// 			headers["authorization"] = "bearer " + webix.storage.local.get("UserInfo").token;
+		// 		}
+		// 	}
+		// );
 	}
 }

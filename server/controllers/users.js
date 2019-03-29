@@ -11,15 +11,16 @@ const JWTStrategy   = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 /*  PASSPORT SETUP  */
 const passport = require('passport');
+const role = require('../middleware/permissions');
 
-// app.get('/', async (req, res) => {
-// 	try {
-// 		const users = await User.find().exec();
-// 		res.send(users.map(user => user.toClient()));
-// 	} catch (error) {
-// 		res.status(500).send("Something broke");
-// 	}
-// })
+app.get('/', passport.authenticate('jwt', {session: false}), role, async (req, res) => {
+	try {
+		const users = await User.find().exec();
+		res.send(users.map(user => user.toClient()));
+	} catch (error) {
+		res.status(500).send("Something broke");
+	}
+})
 
 /* PASSPORT LOCAL AUTHENTICATION */
 passport.use(new JWTStrategy({
@@ -27,7 +28,7 @@ passport.use(new JWTStrategy({
       secretOrKey   : "secret for token"
     },
     function (jwtPayload, cb) {
-			console.log(jwtPayload);
+			// console.log(jwtPayload);
       //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
 
 			// return cb(null, jwtPayload.id)
@@ -46,7 +47,6 @@ passport.use(new LocalStrategy({ usernameField: "email" },
 			email: username
 		}, function (err, user) {
 			if (err) {
-				console.log(err);
 				return done(err);
 			}
 			if (!user) {
@@ -62,7 +62,6 @@ passport.use(new LocalStrategy({ usernameField: "email" },
 		});
 	}
 ));
-
 
 // passport.serializeUser(function (user, cb) {
 // 	// console.log("serialize" + user);
@@ -97,11 +96,16 @@ app.post("/login", (req, res, next) => {
 	})(req, res, next);
 });
 
-app.post("/login/status", async (req, res, next) => {
-	if (req.headers.authorization.split(' ')[1] !== "null") {
-		let token = req.headers.authorization.split(' ')[1]
-		decoded = jwt.verify(token, "secret for token");
-		return res.json({userId: decoded.id, token: token});
+app.get("/getInfo", passport.authenticate('jwt', {session: false}), role, async (req, res, next) => {
+	console.log(req.user);
+	return res.json({userInfo: req.user, admin: true});
+	// return res.json(req.user._id)
+})
+
+app.post("/login/status", passport.authenticate('jwt', {session: false}), async (req, res, next) => {
+	if (req.user) {
+		let token = jwt.sign({id: req.user._id}, "secret for token");
+		return res.json({userId: req.user._id, token: token});
 	}
 	return res.json(null);
 });
