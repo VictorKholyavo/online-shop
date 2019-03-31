@@ -13,16 +13,23 @@ app.get('/', passport.authenticate('jwt', {session: false}), role, async (req, r
 	}
 });
 
+app.post('/status', passport.authenticate('jwt', {session: false}), async (req, res, err) => {
+	try {
+		const status = await Statuses.findById(req.body.statusId).exec();
+		return res.json(status.toClient());
+	} catch (error) {
+		res.status(500).send("Something broke");
+	}
+});
+
 app.post('/startData', passport.authenticate('jwt', {session: false}), role, async (req, res) => {
 	try {
 		let startDataIndex = ["inprocess", "declined"]
 		let startDataStatuses = ["In process", "Declined"]
-		let startDataDescription = [null, "Not in stock"]
 		for (let i = 0; i < startDataStatuses.length; i++) {
 			let newStatus = await new Statuses ({
 				index: startDataIndex[i],
-				value: startDataStatuses[i],
-				description: startDataDescription[i]
+				value: startDataStatuses[i]
 			});
 			newStatus.save(function (err, docs) {
 				console.log(docs);

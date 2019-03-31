@@ -44,6 +44,9 @@ const OrderSchema = new Schema({
   },
 	status: {
 		type: String
+	},
+	statusDescription: {
+		type: String
 	}
 });
 
@@ -54,6 +57,22 @@ OrderSchema.methods.toClient = function toClient() {
   delete obj._id;
   return obj;
 }
+
+// {
+// 	let product = await Products.findById(order.productId).lean().exec();
+// 	let status = await Statuses.findById(order.status).lean().exec();
+// 	let payment = await Payment.findById(order.payment).lean().exec();
+// 	let delivery = await Delivery.findById(order.delivery).lean().exec();
+// 	order.productTitle = product.name;
+// 	order.statusTitle = status.value;
+// 	order.paymentTitle = payment.value;
+// 	order.deliveryTitle = delivery.value;
+// 	order.id = order._id.toHexString();
+// 	delete order._id;
+// 	return order;
+// }
+
+
 OrderSchema.statics.findStatus = function findStatus(id, callback) {
 	Statuses.findById(
 		id,

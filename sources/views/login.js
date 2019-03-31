@@ -2,15 +2,23 @@ import { JetView } from "webix-jet";
 
 export default class FormView extends JetView {
 	config() {
-		return {
+		const login_form = {
 			view: "form",
-			localId: "form",
+			localId: "login_form",
+			width: 600,
+			borderless: false,
+			margin: 20,
 			scroll: false,
 			elements: [
 				{
 					view: "text",
 					localId: "email",
 					name: "email",
+					type: "email",
+					attributes: {
+						required: true,
+						title: "Email is required"
+					},
 					label: "Email"
 				},
 				{
@@ -58,29 +66,25 @@ export default class FormView extends JetView {
 			rules: {
 				$all: webix.rules.isNotEmpty
 			}
+		}
+		return {
+			cols: [{}, {rows: [{}, login_form, {}]}, {}]
 		};
 	}
 	do_login() {
 		const user = this.app.getService("user");
 		const form = this.getRoot();
 
-		if (form.validate()) {
-			const data = form.getValues();
+		 if (this.$getForm().validate()) {
+			const data = this.$getForm().getValues();
 			user.login(data.email, data.password).catch(function () {
 
 			});
-		}
+		 }
 	}
 	$getForm() {
-		return this.$$("form");
+		return this.$$("login_form");
 	}
 	init() {
-		// webix.attachEvent("onBeforeAjax",
-		// 	function(mode, url, data, request, headers) {
-		// 		if (webix.storage.local.get("UserInfo")) {
-		// 			headers["authorization"] = "bearer " + webix.storage.local.get("UserInfo").token;
-		// 		}
-		// 	}
-		// );
 	}
 }

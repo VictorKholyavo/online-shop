@@ -4,13 +4,12 @@ const Schema = mongoose.Schema;
 // const uniqueValidator = require('mongoose-unique-validator');
 
 const UserSchema = new Schema({
-  // email: {
-  // 	type: String,
-  //   unique: true,
-  //   required: true,
-  //   trim: true
-  // },
   email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  username: {
     type: String,
     required: true
   },
@@ -20,9 +19,6 @@ const UserSchema = new Schema({
   },
 	bag: [],
 	orders: []
-  // token: {
-  // 	type: String,
-  // }
 });
 
 // UserSchema.plugin(uniqueValidator);

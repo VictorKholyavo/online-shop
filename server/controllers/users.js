@@ -88,8 +88,6 @@ app.post("/login", (req, res, next) => {
 			if (err) {
 				return next(err);
 			}
-			// res.setHeader('Access-Control-Allow-Credentials', 'true')
-
 			const token = jwt.sign({id: user._id}, "secret for token")
       return res.json({userId: user._id, token: token});
 		});
@@ -97,9 +95,7 @@ app.post("/login", (req, res, next) => {
 });
 
 app.get("/getInfo", passport.authenticate('jwt', {session: false}), role, async (req, res, next) => {
-	console.log(req.user);
 	return res.json({userInfo: req.user, admin: true});
-	// return res.json(req.user._id)
 })
 
 app.post("/login/status", passport.authenticate('jwt', {session: false}), async (req, res, next) => {
@@ -122,7 +118,6 @@ app.post('/registration', async (req, res) => {
 				email: req.body.email,
 				password: req.body.password
 			});
-
 			newUser.save(function (err, docs) {
 				let addUserBag = new Bag({
 					buyerId: docs._id,

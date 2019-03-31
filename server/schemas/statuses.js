@@ -9,9 +9,6 @@ const StatusSchema = new Schema({
 	value: {
 		type: String,
     required: true
-	},
-	description: {
-		type: String
 	}
 });
 

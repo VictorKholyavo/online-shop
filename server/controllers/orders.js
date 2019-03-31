@@ -1,51 +1,79 @@
 const express = require('express');
 let app = express();
 const Orders = require('../schemas/orders');
+const Products = require('../schemas/products');
 const Statuses = require('../schemas/statuses');
+const Payment = require('../schemas/payment');
+const Delivery = require('../schemas/delivery');
 const role = require('../middleware/permissions');
 const passport = require('passport');
 
+const ordersToClient = async (order) => {
+	let product = await Products.findById(order.productId).lean().exec();
+	let status = await Statuses.findById(order.status).lean().exec();
+	let payment = await Payment.findById(order.payment).lean().exec();
+	let delivery = await Delivery.findById(order.delivery).lean().exec();
+	order.productTitle = product.name;
+	order.statusTitle = status.value;
+	order.statusIndex = status.index;
+	order.paymentTitle = payment.value;
+	order.deliveryTitle = delivery.value;
+	order.id = order._id.toHexString();
+	delete order._id;
+	return order
+}
+
 app.get('/', passport.authenticate('jwt', {session: false}), role, async (req, res, err) => {
 	try {
-		const orders = await Orders.find().exec();
-			res.json(orders.map(order => order.toClient()));
+		const orders = await Orders.find().lean().exec();
+		let sendData = await Promise.all(orders.map(ordersToClient));
+		Promise.all(sendData).then((completed) => res.send(completed));
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}
 });
+
+
 
 app.get('/:id', passport.authenticate('jwt', {session: false}), async (req, res, err) => {
 	try {
-		const orders = await Orders.find({buyerId: req.user._id}).exec();
-		// let userId = userInfo._id;
-		let sendData = []
-		for (let i = 0; i < orders.length; i++) {
-			await Orders.findStatus(orders[i].status, function(err, status){
-				orders[i].status = status.value
-				sendData.push(orders[i]);
-				// return res.send(groups.map(group => group.toClient()));
-			})
-		}
-		console.log(sendData);
-		return res.json(orders.map(async (order) => {
-			await Orders.findStatus(order.status, function(err, status) {
-				order.status = status.value;
-			})
-			order.id = order._id.toHexString();
-			delete order._id;
-			return order;
-		}));
-		// res.json(orders.map(order => order.toClient()));
+		const orders = await Orders.find({buyerId: req.user._id}).lean().exec();
+		let sendData = await Promise.all(orders.map(ordersToClient));
+		Promise.all(sendData).then((completed) => res.send(completed));
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}
 });
-
+app.put('/:id', passport.authenticate('jwt', {session: false}), async (req, res, err) => {
+	try {
+		console.log(req.body.id);
+		console.log(req.body.status);
+		console.log(req.body.statusDescription);
+		await Orders.findOneAndUpdate(
+			{_id: req.body.id},
+			{
+				$set: {
+					status: req.body.status,
+					statusDescription: req.body.statusDescription
+				}
+			},
+			{
+				new: true
+			},
+			function (err, docs) {
+				console.log(docs);
+				res.send(docs.toClient());
+			}
+		);
+		// let sendData = await Promise.all(orders.map(ordersToClient));
+		// Promise.all(sendData).then((completed) => res.send(completed));
+	} catch (error) {
+		res.status(500).send("Something broke");
+	}
+});
 app.post('/add', async (req, res) => {
 	try {
-		console.log(req.body);
 		const statusInProcess = await Statuses.findOne({index: "inprocess"}).exec();
-		console.log(statusInProcess);
 		let newOrder = await new Orders ({
 			productId: req.body.productId,
 			amount: req.body.amount,
@@ -60,14 +88,6 @@ app.post('/add', async (req, res) => {
 		});
 		newOrder.save()
 		return res.send(newOrder);
-		// for (let i = 0; i < startDataTypes.length; i++) {
-		// 	let newType = await new Types({
-		// 		value: startDataTypes[i]
-		// 	});
-		// 	newType.save();
-		// }
-		// return res.json(startDataTypes)
-
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}

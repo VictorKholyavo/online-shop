@@ -2,11 +2,22 @@ const express = require('express');
 let app = express();
 const mongoose = require('mongoose');
 const Products = require('../schemas/products');
+const passport = require('passport');
 
 app.get('/', async (req, res) => {
 	try {
 		const products = await Products.find().exec();
 		res.send(products.map(product => product.toClient()));
+	} catch (error) {
+		res.status(500).send("Something broke");
+	}
+});
+
+app.post('/product', passport.authenticate('jwt', {session: false}), async (req, res) => {
+	try {
+		const product = await Products.findById(req.body.productId, function (err, docs) {
+			res.send(docs.toClient())
+		})
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}
@@ -31,6 +42,27 @@ app.post('/', async (req, res) => {
 		res.status(500).send("Something broke");
 	}
 })
+app.put('/:id', passport.authenticate('jwt', {session: false}), async (req, res, err) => {
+	try {
+		req.body.rating = parseInt(req.body.rating, 10)
+		await Products.findOneAndUpdate(
+			{_id: req.body.productId},
+			{
+				$set: {
+					rating: req.body.rating + 1
+				}
+			},
+			{
+				new: true
+			},
+			function (err, docs) {
+				res.send(docs.toClient());
+			}
+		);
+	} catch (error) {
+		res.status(500).send("Something broke");
+	}
+});
 
 app.delete('/:id', async (req, res) => {
 	try {

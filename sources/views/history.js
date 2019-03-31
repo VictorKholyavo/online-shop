@@ -1,5 +1,5 @@
 import {JetView} from "webix-jet";
-import FormForOrderView from "./formOrder";
+import WindowInfoStatusView from "./windowInfoStatus";
 
 export default class DataView extends JetView{
 	config() {
@@ -23,17 +23,35 @@ export default class DataView extends JetView{
 						// 	return "<div class='columnSettings'>"+ photo +"</div>"
 						// }
 						// },
-						{id: "productId", header:"productId", fillspace: true},
+						{id: "productTitle", header:"Product", fillspace: true},
 						{id: "amount", header: "Amount", width:180},
-						{id: "address", header: "address", fillspace: true},
-						{id: "delivery", header: "delivery", fillspace: true},
-						{id: "payment", header: "payment", fillspace: true},
-						{id: "date", header:"date"},
-						{id: "status", header:"status"},
+						{id: "address", header: "Address", fillspace: true},
+						{id: "deliveryTitle", header: "Delivery", fillspace: true},
+						{id: "paymentTitle", header: "Payment", fillspace: true},
+						{id: "date", header:"Date"},
+						{id: "statusTitle", header:"Status"},
 					],
 					url: "http://localhost:3014/orders/:id",
 					rowHeight: 80,
 					select: true,
+					on: {
+						onItemClick: (id) => {
+							let values = this.$$("datatable").getItem(id);
+							let windowInfoStatus = this.windowInfoStatusView;
+							if (id.column == "statusTitle") {
+								webix.ajax().post("http://localhost:3014/statuses/status", {statusId: values.status}).then(function (response) {
+									response = response.json();
+									if (response.index == "declined") {
+										windowInfoStatus.showWindow(values);
+										// textarea.show()
+									}
+									else {
+										// textarea.hide()
+									}
+								});
+							}
+						}
+					}
 				},
 			]
 		};
@@ -46,7 +64,7 @@ export default class DataView extends JetView{
 	$getDatatable() {
 		return this.$$("datatable");
 	}
-	init(){
-		this.FormForOrderView = this.ui(FormForOrderView);
+	init() {
+		this.windowInfoStatusView = this.ui(WindowInfoStatusView);
 	}
 }

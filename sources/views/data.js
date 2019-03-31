@@ -48,7 +48,9 @@ export default class DataView extends JetView{
 						onItemDblClick: (id) => {
 							if (id.column !== "amount") {
 								let values = this.$$("datatable").getItem(id);
-								this.windowInfo.showWindow(values);
+								this.windowInfo.showWindow(values, function (data) {
+									console.log(data);
+								});
 							}
 						},
 					},
@@ -64,13 +66,6 @@ export default class DataView extends JetView{
 							height: 35,
             },
           },
-				},
-				{
-					view: "button",
-					value: "clear localstorage",
-					click: () => {
-						webix.storage.local.remove("bag");
-					}
 				}
 			]
 		};
@@ -123,5 +118,10 @@ export default class DataView extends JetView{
 				}
 	  	}
 		});
+		this.on(this.app, "refreshDatatable", (data) => {
+			console.log('sadasdsd');
+    	this.$getDatatable().clearAll();
+			this.$getDatatable().load(this.$getDatatable().config.url)
+    });
 	}
 }
