@@ -103,6 +103,8 @@ export default class FormView extends JetView {
 									click: () => {
 										let values = this.$getForm().getValues();
 										webix.ajax().post("http://localhost:3014/admins/addadmin", values);
+										this.$getForm().clear();
+										this.$getForm().clearValidation();
 									}
 								}
 							]
@@ -138,7 +140,9 @@ export default class FormView extends JetView {
 		const user = this.app.getService("user");
 		if (this.$getForm().validate()) {
 			const data = this.$getForm().getValues();
-			user.login(data.email, data.password);
+			user.login(data.email, data.password).catch(function (err) {
+				webix.message({type: "error", text: err.responseText});
+			});
 		}
 	}
 	$getForm() {

@@ -63,7 +63,7 @@ app.post("/login", (req, res, next) => {
 				return next(err);
 			}
 			if (!user) {
-				return res.send('Укажите правильный email или пароль!');
+				return res.status(403).send('Укажите правильный email или пароль!');
 			}
 			req.logIn(user, {session: false}, function(err) {
 				if (err) {
@@ -112,12 +112,6 @@ app.post('/registration', async (req, res, next) => {
 				addUserBag.save(function (err, docs) {
 					passport.authenticate('local', {session: false},
 						function(err, user) {
-							if (err) {
-								return next(err);
-							}
-							if (!user) {
-								return res.send({err: 'Укажите правильный email или пароль!'});
-							}
 							req.logIn(user, {session: false}, function(err) {
 								if (err) {
 									return next(err);
