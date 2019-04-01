@@ -59,6 +59,7 @@ export default class FormView extends JetView {
 						{
 							view: "text",
 							localId: "password",
+							type:"password",
 							name: "password",
 							required: true,
 							batch: "b1",
@@ -137,11 +138,15 @@ export default class FormView extends JetView {
 		this.$getForm().clearValidation();
 	}
 	do_login() {
+		let form = this.$getForm();
 		const user = this.app.getService("user");
+		
 		if (this.$getForm().validate()) {
 			const data = this.$getForm().getValues();
 			user.login(data.email, data.password).catch(function (err) {
 				webix.message({type: "error", text: err.responseText});
+				form.clear();
+				form.clearValidation();
 			});
 		}
 	}
