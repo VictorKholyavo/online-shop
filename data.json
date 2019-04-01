@@ -1,0 +1,7 @@
+[
+		{ "id":"1", "value":"Phones", "data":[
+		{ "id":"1.1", "value":"Nokia"},
+		{ "id":"1.2", "value":"Samsung"},
+		{ "id":"1.3", "value":"Huawei"}
+	]}
+]
