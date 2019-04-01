@@ -7,65 +7,85 @@ export default class FormForOrderView extends JetView {
 			localId: "form",
 			scroll: false,
 			elements: [
-				// {
-				// 	view: "richselect",
-				// 	name: "type",
-				// 	label: "Type of Product",
-				// 	options: "http://localhost:3014/types"
-				// },
-				// {
-				// 	view: "richselect",
-				// 	name: "manufacturer",
-				// 	label: "Manufacturer",
-				// 	options: "http://localhost:3014/manufacturers/all"
-				// },
 				{
 					view: "text",
 					name: "buyerName",
-					label: "Your Name"
+					label: "Your Name",
+					invalidMessage: "Your Name can not be empty",
+					labelWidth:140,
+					required: true
 				},
 				{
 					view: "text",
 					name: "buyerEmail",
-					label: "Email"
+					label: "Email",
+					invalidMessage: "Incorrect email",
+					labelWidth:140,
+					required: true
 				},
 				{
 					view: "text",
 					name: "phone",
-					label: "Phone"
+					label: "Phone",
+					invalidMessage: "Incorrect phone",
+					labelWidth:140,
+					required: true
 				},
 				{
 					view: "richselect",
 					name: "delivery",
 					label: "Delivery type",
+					invalidMessage: "Delivery Address can not be empty",
+					labelWidth:140,
 					options: "http://localhost:3014/delivery"
 				},
 				{
 					view: "text",
 					name: "address",
-					label: "Delivery address"
+					label: "Delivery address",
+					labelWidth:140,
+					required: true
 				},
 				{
 					view: "richselect",
 					name: "payment",
 					label: "Payment type",
-					options: "http://localhost:3014/payment"
-
+					labelWidth:140,
+					options: "http://localhost:3014/payment",
+					required: true
 				},
 				{
-					view: "button",
-					localId: "checkout",
-					value: "Checkout",
-					click: () => {
-						const values = this.$getForm().getValues();
-						this.onSubmit(values);
-					}
+					cols: [
+						{
+							view: "button",
+							localId: "checkout",
+							value: "Checkout",
+							click: () => {
+								const values = this.$getForm().getValues();
+								this.onSubmit(values);
+							}
+						},
+						{
+							view: "button",
+							localId: "closeButton",
+							value: "Close",
+							click: () => {
+								this.hideOrNotHide();
+							}
+						}
+					]
 				}
 			],
 			rules: {
-				$all: webix.rules.isNotEmpty
+				$buyerName: webix.rules.isNotEmpty,
+				$buyerEmail: webix.rules.isEmail,
+				$phone: webix.rules.isNotEmpty,
+				$address: webix.rules.isNotEmpty,
+				$delivery: webix.rules.isNotEmpty,
+				$payment: webix.rules.isNotEmpty,
+				$all: webix.rules.isNotEmpty,
 			}
-		}
+		};
 		return {
 			view: "window",
 			localId: "formForOrder",
@@ -82,16 +102,7 @@ export default class FormForOrderView extends JetView {
 		};
 	}
 	showWindow(values, filled) {
-		// let formTemplate = this.$$("formTemplate");
 		this.getRoot().show();
-		// if (values) {
-		// 	this.$getForm().setValues(values);
-		// 	formTemplate.define({template: _("Edit word")});
-		// }
-		// else {
-		// 	formTemplate.define({template: _("Add word")});
-		// }
-		// formTemplate.refresh();
 		this.onSubmit = function(data) {
 			if (this.$getForm().validate()) {
 				filled(data);

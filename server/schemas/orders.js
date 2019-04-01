@@ -58,36 +58,6 @@ OrderSchema.methods.toClient = function toClient() {
   return obj;
 }
 
-// {
-// 	let product = await Products.findById(order.productId).lean().exec();
-// 	let status = await Statuses.findById(order.status).lean().exec();
-// 	let payment = await Payment.findById(order.payment).lean().exec();
-// 	let delivery = await Delivery.findById(order.delivery).lean().exec();
-// 	order.productTitle = product.name;
-// 	order.statusTitle = status.value;
-// 	order.paymentTitle = payment.value;
-// 	order.deliveryTitle = delivery.value;
-// 	order.id = order._id.toHexString();
-// 	delete order._id;
-// 	return order;
-// }
-
-
-OrderSchema.statics.findStatus = function findStatus(id, callback) {
-	Statuses.findById(
-		id,
-		function (err, doc) {
-			//doc.findByToken()
-			if (err) {
-				let error = "No statuses found";
-				return callback(error);
-			}
-			else {
-				return callback(null, doc)
-			}
-		}
-	);
-}
 // Компилируем модель из схемы
 const Order = mongoose.model('Order', OrderSchema);
 

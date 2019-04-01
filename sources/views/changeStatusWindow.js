@@ -12,37 +12,35 @@ export default class ChangeStatusWindowView extends JetView {
 					view: "richselect",
 					name: "status",
 					label: "Choose Status",
-					// value: "#title#",
 					options: {
 						body: {
-							// template: "#title#",
 							url: "http://localhost:3014/statuses",
 						}
 					},
 					on: {
-						onChange: (newv, oldv) => {
-							let textarea = this.$$("textarea")
+						onChange: (newv) => {
+							let textarea = this.$$("textarea");
 							webix.ajax().post("http://localhost:3014/statuses/status", {statusId: newv}).then(function (response) {
 								response = response.json();
 								if (response.index == "declined") {
-									textarea.show()
+									textarea.show();
 								}
 								else {
-									textarea.hide()
+									textarea.hide();
 								}
 							});
 						}
 					},
 				},
 				{
-			    view: "textarea",
+					view: "textarea",
 					localId: "textarea",
 					hidden: true,
 					name: "statusDescription",
-			    label: "Reason",
-			    labelAlign: "left",
+					label: "Reason",
+					labelAlign: "left",
 					value: " ",
-			    height: 200,
+					height: 200,
 				},
 				{
 					cols: [
@@ -72,10 +70,7 @@ export default class ChangeStatusWindowView extends JetView {
 			head: {
 				view:"toolbar", margin:-4, cols:[
 					{view:"label", label: "Change status", localId: "titleOfProduct"},
-					{view:"icon", icon:"wxi-close", click: () => {
-						this.$$("changeStatusWindow").hide();
-						}
-					}
+					{view:"icon", icon:"wxi-close", click: () => {this.$$("changeStatusWindow").hide();}}
 				]
 			},
 			body: form,
@@ -98,8 +93,7 @@ export default class ChangeStatusWindowView extends JetView {
 						data.statusDescription = "";
 					}
 					filled(data);
-				})
-
+				});
 			}
 		};
 	}

@@ -12,14 +12,28 @@ export default class FormforProductView extends JetView {
 						{
 							view: "richselect",
 							name: "type",
+							localId: "type",
 							label: "Type of Product",
 							options: "http://localhost:3014/types"
 						},
 						{
 							view: "richselect",
 							name: "manufacturer",
+							localId: "manufacturer",
 							label: "Manufacturer",
-							options: "http://localhost:3014/manufacturers/all"
+							options:{
+								on: {
+									onShow: function () {
+										let typeValue = this.$scope.$$("type").data.value;
+										this.getBody().filter(function(obj) {
+											return obj.type == typeValue;
+										});
+									}
+								},
+								body: {
+									url:"http://localhost:3014/manufacturers/all",
+								}
+							},
 						},
 						{
 							view: "text",
@@ -78,7 +92,6 @@ export default class FormforProductView extends JetView {
 										const values = this.$getForm().getValues();
 										let image = webix.storage.local.get("image");
 										values.image = image;
-										console.log(values);
 										this.saveProduct(values);
 									}
 								},
@@ -86,8 +99,8 @@ export default class FormforProductView extends JetView {
 									view: "button",
 									localId: "closeButton",
 									value: "Close",
-									click: function () {
-										this.getTopParentView().hide();
+									click:() => {
+										this.show("/adminMenu/orders");
 									}
 								}
 							]
@@ -112,6 +125,12 @@ export default class FormforProductView extends JetView {
 			]
 		};
 	}
+	$getTypeRichselect() {
+		return this.$$("type");
+	}
+	$getManufacturerRichselect() {
+		return this.$$("manufacturer");
+	}
 	addStartData() {
 		webix.ajax().post("http://localhost:3014/types/startData", []).then(
 			webix.ajax().post("http://localhost:3014/manufacturers/startData", []).then(
@@ -121,16 +140,11 @@ export default class FormforProductView extends JetView {
 					)
 				)
 			)
-		)
-
-
+		);
 	}
 	saveProduct(values) {
 		if (this.$getForm().validate()) {
-			webix.ajax().post("http://localhost:3014/products", values).then(function (response) {
-				response = response.json();
-				console.log(response);
-			});
+			webix.ajax().post("http://localhost:3014/products", values);
 			this.$getForm().clear();
 			this.$getForm().clearValidation();
 		}
@@ -138,7 +152,7 @@ export default class FormforProductView extends JetView {
 			webix.message({ type:"error", text:"Invalid info" });
 		}
 	}
-	showWindow(values, filled) {
+	showWindow(values) {
 		let formTemplate = this.$$("formTemplate");
 		this.getRoot().show();
 		if (values) {

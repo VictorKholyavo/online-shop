@@ -30,15 +30,15 @@ export default class DataView extends JetView{
 					},
 					on: {
 						onItemClick: (id) => {
-							let datatable = this.$$("datatable")
+							let datatable = this.$$("datatable");
 							let values = this.$$("datatable").getItem(id);
 							if (id.column == "statusTitle") {
 								let form = this.ChangeStatusWindowView;
 								this.ChangeStatusWindowView.showWindow({status: values.status, statusDescription: values.statusDescription}, function(data) {
 									datatable.updateItem(id.row, data);
 									form.hideWindow();
-									return false
-								})
+									return false;
+								});
 							}
 						}
 					},
@@ -48,17 +48,11 @@ export default class DataView extends JetView{
 
 			]
 		};
-		// function likeCompare(value, filter){
-		// 	value = value.toString().toLowerCase();
-		// 	filter = filter.toString().toLowerCase();
-		// 	return value.indexOf(filter) !== -1;
-		// }
 	}
 	$getDatatable() {
 		return this.$$("datatable");
 	}
 	init(){
-		const datatable = this.$getDatatable()
 		this.ChangeStatusWindowView = this.ui(ChangeStatusWindowView);
 	}
 }

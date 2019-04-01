@@ -16,12 +16,10 @@ app.get('/', async (req, res) => {
 	}
 });
 
-app.get('/user', async (req, res) => {
+app.get('/user', passport.authenticate('jwt', {session: false}), async (req, res) => {
 	try {
-		let token = req.headers.authorization.split(' ')[1];
-		let decoded = jwt.verify(token, "secret for token");
 		let sendData = [];
-		const userBag = await Bag.findOne({buyerId: decoded.id}).exec();
+		const userBag = await Bag.findOne({buyerId: req.user._id}).exec();
 		for (let i = 0; i < userBag.products.length; i++) {
 			const oneOrder = await Products.findById(userBag.products[i].productId).lean().exec();
 			oneOrder.productId = oneOrder._id;
@@ -42,9 +40,7 @@ app.get('/user', async (req, res) => {
 
 app.get('/user/count', passport.authenticate('jwt', {session: false}), async (req, res) => {
 	try {
-		console.log(req.user._id);
 		const userBag = await Bag.findOne({buyerId: req.user._id}).exec();
-		console.log(userbag);
 		return res.send(userBag)
 	}
 	catch (error) {
@@ -52,16 +48,14 @@ app.get('/user/count', passport.authenticate('jwt', {session: false}), async (re
 	}
 });
 
-app.put('/addProduct', async (req, res) => {
+app.put('/addProduct', passport.authenticate('jwt', {session: false}), async (req, res) => {
 	try {
-		let token = req.headers.authorization.split(' ')[1];
-		let decoded = jwt.verify(token, "secret for token");
 		let product = await new Unit ({
 			productId: req.body.productId,
 			amount: req.body.amount
 		});
 		await Bag.findOneAndUpdate(
-			{buyerId: decoded.id},
+			{buyerId: req.user._id},
 			{
 				$push: {
 					products: product
@@ -80,7 +74,6 @@ app.put('/addProduct', async (req, res) => {
 
 app.delete('/user/:id', passport.authenticate('jwt', {session: false}), async (req, res) => {
 	try {
-		console.log(req.body);
 		let orderId = mongoose.Types.ObjectId(req.body.id);
 		await Bag.findOneAndUpdate(
 			{ buyerId: req.user._id },

@@ -1,6 +1,4 @@
-import { JetView, plugins } from "webix-jet";
-import DataView from "./data";
-
+import { JetView } from "webix-jet";
 
 export default class TopView extends JetView {
 	config() {
@@ -8,15 +6,13 @@ export default class TopView extends JetView {
 		var menu = {
 			view: "tree",
 			localId: "tree",
-			// id: "top:menu",
-			// css: "app_menu",
 			width: 300,
 			activeTitle: true,
 			url: "http://localhost:3014/types",
 			select: true,
 			on: {
 				onItemClick: (id) => {
-					this.show("/top/data")
+					this.show("/top/data");
 					let level = this.$$("tree").getItem(id).$level;
 					let data = [level, id];
 					this.app.callEvent("filterDatatableByTypeAndManufacture", [data]);
@@ -39,12 +35,12 @@ export default class TopView extends JetView {
 							margin: 20,
 							paddingX: 10,
 							cols: [
-								{ view: "template", template: "Online shop", width: 140 },
+								{ view: "template", template: "Online shop", width: 140, },
 								{},
-								{ view: "template", template: "Hi, ", width: 140 },
+								{ view: "template", localId: "helloTemplate", template: " ", width: 240, },
 								{ view: "button", value: "Logout", width: 150, click: () => {this.do_logout(); window.location.reload(true); }},
-								{ view: "button", value: "History", width: 150, click: () => {this.show("/top/history")}},
-								{ view: "button", value: "Bag", localId: "bag", width: 150, click: () => {this.show("/top/bag")}}
+								{ view: "button", value: "History", width: 150, click: () => {this.show("/top/history");}},
+								{ view: "button", value: "Bag", localId: "bag", width: 150, click: () => {this.show("/top/bag");}}
 							],
 							css: "webix_dark"
 						},
@@ -69,7 +65,10 @@ export default class TopView extends JetView {
 		return ui;
 	}
 	$getBag() {
-		return this.$$("bag")
+		return this.$$("bag");
+	}
+	$getHelloTemplate() {
+		return this.$$("helloTemplate");
 	}
 	do_logout() {
 		const user = this.app.getService("user");
@@ -78,15 +77,18 @@ export default class TopView extends JetView {
 		});
 	}
 	refresh_bag_button() {
-		let bag = this.$$("bag")
+		let bag = this.$$("bag");
 		webix.ajax().get("http://localhost:3014/bag/user").then(function (response) {
 			response = response.json();
 			bag.define({value: "Bag ("+response.length+")"});
 			bag.refresh();
-			return response.length
+			return response.length;
 		});
 	}
 	init() {
+		let username = webix.storage.local.get("UserInfo").username;
+		this.$getHelloTemplate().define({template: "Hi, " + username});
+		this.$getHelloTemplate().refresh();
 		this.on(this.app, "addProductToBag", () => {
 			this.refresh_bag_button();
 		});

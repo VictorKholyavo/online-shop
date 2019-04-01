@@ -41,31 +41,4 @@ app.post('/startData', passport.authenticate('jwt', {session: false}), role, asy
 	}
 })
 
-// app.post('/', async (req, res) => {
-// 	try {
-// 		let newType = await new Types({
-// 			value: req.body.value
-// 		});
-// 		newType.save(function(err, docs) {
-// 			if (err) {
-// 				return res.status(401).send("Can't add new type")
-// 			}
-// 			return res.json(newType)
-// 		});
-// 	} catch (error) {
-// 		res.status(500).send("Something broke");
-// 	}
-// })
-
-// app.delete('/:id', async (req, res) => {
-// 	try {
-// 		await Types.findOneAndRemove(
-// 			{ _id: req.params.id },
-// 		);
-// 		res.send({id: req.params.id})
-// 	} catch (error) {
-// 		res.status(500).send("Something broke");
-// 	}
-// });
-
 module.exports = app

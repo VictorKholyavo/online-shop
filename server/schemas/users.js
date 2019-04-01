@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 // const bcrypt = require('bcrypt');
 // const uniqueValidator = require('mongoose-unique-validator');
+const uniqueValidator = require('mongoose-unique-validator');
 
 const UserSchema = new Schema({
   email: {
@@ -17,11 +18,15 @@ const UserSchema = new Schema({
     type: String,
     required: true,
   },
+	date: {
+		type: Date,
+		default: Date.now,
+	},
 	bag: [],
 	orders: []
 });
 
-// UserSchema.plugin(uniqueValidator);
+UserSchema.plugin(uniqueValidator);
 
 // UserSchema.statics.authenticate = function (email, password, callback) {
 //   User.findOne({ email: email })
@@ -53,21 +58,6 @@ const UserSchema = new Schema({
 //     next();
 //   })
 // });
-
-// UserSchema.statics.findUserByToken = function findUserByToken(token, callback) {
-// 	User.findOne(
-// 		{ token: token },
-// 		function (err, doc) {
-// 			if(doc) {
-// 				return callback(null, doc)
-// 			}
-// 			else {
-// 				let error = "You must be logged";
-// 				return callback(error);
-// 			}
-// 		}
-// 	);
-// }
 
 UserSchema.methods.toClient = function toClient() {
   const obj = this.toObject();

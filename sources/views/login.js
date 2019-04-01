@@ -3,88 +3,159 @@ import { JetView } from "webix-jet";
 export default class FormView extends JetView {
 	config() {
 		const login_form = {
-			view: "form",
-			localId: "login_form",
-			width: 600,
-			borderless: false,
-			margin: 20,
-			scroll: false,
-			elements: [
-				{
-					view: "text",
-					localId: "email",
-					name: "email",
-					type: "email",
-					attributes: {
-						required: true,
-						title: "Email is required"
-					},
-					label: "Email"
-				},
-				{
-					view: "text",
-					localId: "password",
-					name: "password",
-					label: "Password"
-				},
+			rows: [
 				{
 					cols: [
 						{
 							view: "button",
-							value: "registration",
-							click: () => {
-								let values = this.$$("form").getValues();
-								webix.ajax().post("http://localhost:3014/users/registration", values).then(function (response) {
-									response = response.json();
-								});
-							}
-						},
-						{
-							view: "button",
-							localId: "userButton",
 							value: "Login",
-							hotkey: "Enter",
+							batch: "user",
+							type: "form",
 							click: () => {
-								this.do_login();
-							}
+								this.change_mode("authorization");
+							},
 						},
 						{
 							view: "button",
-							localId: "adminButton",
-							value: "Register as admin",
+							value: "Registration",
+							batch: "guest",
+							type: "form",
 							click: () => {
-								let values = this.$$("form").getValues();
-								webix.ajax().post("http://localhost:3014/admins/addadmin", values).then(function (response) {
-									response = response.json();
-									console.log(response);
-								});
+								this.change_mode("registration");
 							}
 						}
 					]
+				},
+				{
+					view: "form",
+					localId: "login_form",
+					width: 600,
+					borderless: false,
+					margin: 20,
+					scroll: false,
+					visibleBatch:"b1",
+					elements: [
+						{
+							view: "text",
+							localId: "email",
+							name: "email",
+							type: "email",
+							batch: "b1",
+							attributes: {
+								required: true,
+								title: "Email is required"
+							},
+							label: "Email"
+						},
+						{
+							view: "text",
+							localId: "username",
+							name: "username",
+							label: "Username",
+							required: true,
+							labelPosition: "left",
+							batch: "b2"
+						},
+						{
+							view: "text",
+							localId: "password",
+							name: "password",
+							required: true,
+							batch: "b1",
+							label: "Password"
+						},
+						{
+							cols: [
+								{
+									view: "button",
+									localId: "loginButton",
+									value: "Login",
+									batch: "b1",
+									hotkey: "Enter",
+									click: () => {
+										this.do_login();
+									}
+								},
+								{
+									view: "button",
+									localId: "registerButton",
+									value: "Registration",
+									batch: "b2",
+									click: () => {
+										let values = this.$getForm().getValues();
+										let form = this.$getForm();
+										const user = this.app.getService("user");
+										webix.ajax().post("http://localhost:3014/users/registration", values).then(function () {
+										}, function (err) {
+											webix.message({type: "error", text: err.responseText});
+											form.clear();
+											form.clearValidation();
+										}).then(function () {
+											user.login(values.email, values.password);
+										});
+									}
+								},
+								{
+									view: "button",
+									localId: "adminButton",
+									value: "Register as admin",
+									batch: "b2",
+									click: () => {
+										let values = this.$getForm().getValues();
+										webix.ajax().post("http://localhost:3014/admins/addadmin", values);
+									}
+								}
+							]
+						}
+					],
+					rules: {
+						$all: webix.rules.isNotEmpty
+					}
 				}
-			],
-			rules: {
-				$all: webix.rules.isNotEmpty
-			}
-		}
+			]
+		};
 		return {
 			cols: [{}, {rows: [{}, login_form, {}]}, {}]
 		};
 	}
+	change_mode(mode) {
+		if (mode == "authorization") {
+			this.$getForm().showBatch("b1");
+			this.$getLoginButton().show();
+			this.$getRegisterButton().hide();
+			this.$getAdminButton().hide();
+		}
+		else {
+			this.$getForm().showBatch("b2", true);
+			this.$getLoginButton().hide();
+			this.$getRegisterButton().show();
+			this.$getAdminButton().show();
+		}
+		this.$getForm().clear();
+		this.$getForm().clearValidation();
+	}
 	do_login() {
 		const user = this.app.getService("user");
-		const form = this.getRoot();
-
-		 if (this.$getForm().validate()) {
+		if (this.$getForm().validate()) {
 			const data = this.$getForm().getValues();
-			user.login(data.email, data.password).catch(function () {
-
-			});
-		 }
+			user.login(data.email, data.password);
+		}
 	}
 	$getForm() {
 		return this.$$("login_form");
 	}
+	$getLoginButton() {
+		return this.$$("loginButton");
+	}
+	$getRegisterButton() {
+		return this.$$("registerButton");
+	}
+	$getAdminButton() {
+		return this.$$("adminButton");
+	}
 	init() {
+		this.$getLoginButton().show();
+		this.$getRegisterButton().hide();
+		this.$getAdminButton().hide();
 	}
 }

@@ -6,36 +6,8 @@ const Types = require('../schemas/types');
 
 app.get('/', async (req, res) => {
 	try {
-		// const manufacturers = await Manufacturers.find().exec();
-		//
-		//
-		// 	let startDataPhones = ["iPhone", "Samsung", "Huawei"];
-		// 	for (let i = 0; i < startDataPhones.length; i++) {
-		// 		await Types.findOne({value: "Phones"}, async(err, docs) => {
-		// 			let newManufacture = await new Manufacturers({
-		// 				value: startDataPhones[i],
-		// 				type: docs._id
-		// 			});
-		// 			newManufacture.save();
-		// 			await Types.findOneAndUpdate(
-		// 				{ value: "Phones" },
-		// 				{
-		// 					$push: {
-		// 						manufacturers: newManufacture
-		// 					}
-		// 				},
-		// 				{
-		// 					new: true,
-		// 					upsert: false
-		// 				}
-		// 			);
-		// 		})
-		// 	}
-		// 	//
-		// 	// let startDataNotebooks = ["HP", "Acer", "Asus"];
-		// 	//
-		// }
-		res.send(manufacturers.map(manufacture => manufacture.toClient()));
+		const manufacturers = await Manufacturers.find().exec();
+			res.json(manufacturers.map(manufacturer => manufacturer.toClient()));
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}

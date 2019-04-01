@@ -43,10 +43,6 @@ export default class DataView extends JetView{
 									response = response.json();
 									if (response.index == "declined") {
 										windowInfoStatus.showWindow(values);
-										// textarea.show()
-									}
-									else {
-										// textarea.hide()
 									}
 								});
 							}

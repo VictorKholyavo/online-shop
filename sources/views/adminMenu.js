@@ -14,14 +14,7 @@ export default class TopView extends JetView{
 				{ value: "Cleints Info", id:"clientsInfo", icon:"wxi-columns" },
 				{ value: "Orders",	id:"orders",  icon:"wxi-pencil" },
 				{ value: "Add Product",	id:"addProductForm",  icon:"wxi-pencil" }
-			],
-			on: {
-				onAfterSelect:function(id){
-					// const header = this.$scope.$$("header");
-					// header.define({template: this.getItem(id).value});
-					// header.refresh();
-				},
-			},
+			]
 		};
 
 		const ui = {
@@ -41,11 +34,9 @@ export default class TopView extends JetView{
 							cols: [
 								{ view: "template", template: "Online shop", width: 140 },
 								{},
-								{ view: "template", template: "Hi, ", width: 140 },
+								{ view: "template", localId: "helloTemplate", template: " ", width: 240 },
 
-								{ view: "button", value: "Logout", width: 150, click: () => {this.do_logout(); window.location.reload(true); }},
-								{ view: "button", value: "History", width: 150, click: () => {let buyerInfo = webix.ajax().sync().get("http://localhost:3014/users/getInfo"); buyerInfo = JSON.parse(buyerInfo.response); console.log(buyerInfo);}},
-								{ view: "button", value: "Bag", localId: "bag", width: 150, click: () => {this.show("/top/bag")}}
+								{ view: "button", value: "Logout", width: 150, click: () => {this.do_logout(); window.location.reload(true); }}
 							],
 							css: "webix_dark"
 						},
@@ -68,11 +59,8 @@ export default class TopView extends JetView{
 		};
 		return ui;
 	}
-	do_status() {
-		const user = this.app.getService("user");
-		user.getStatus();
-		console.log(user);
-		// user.status()
+	$getHelloTemplate() {
+		return this.$$("helloTemplate");
 	}
 	do_logout() {
 		const user = this.app.getService("user");
@@ -82,5 +70,8 @@ export default class TopView extends JetView{
 	}
 	init(){
 		this.use(plugins.Menu, "top:menu");
+		let username = webix.storage.local.get("UserInfo").username;
+		this.$getHelloTemplate().define({template: "Hi, " + username});
+		this.$getHelloTemplate().refresh();
 	}
 }

@@ -4,7 +4,7 @@ import WindowInfoView from "./windowInfo";
 export default class DataView extends JetView{
 	config() {
 		webix.protoUI({
-		    name:"datatableWithCounter"
+			name:"datatableWithCounter"
 		}, webix.ui.datatable, webix.ActiveContent);
 		return {
 			rows: [
@@ -22,7 +22,7 @@ export default class DataView extends JetView{
 							else {
 								photo = "<img src ="+obj.image+" class='smallPhoto'>";
 							}
-							return "<div class='columnSettings'>"+ photo +"</div>"
+							return "<div class='columnSettings'>"+ photo +"</div>";
 						}},
 						{id: "name", header:["Name", {content:"textFilter", compare:likeCompare}], fillspace: true},
 						{id: "price", header: "Price", fillspace: true},
@@ -48,24 +48,23 @@ export default class DataView extends JetView{
 						onItemDblClick: (id) => {
 							if (id.column !== "amount") {
 								let values = this.$$("datatable").getItem(id);
-								this.windowInfo.showWindow(values, function (data) {
-									console.log(data);
-								});
+								this.windowInfo.showWindow(values);
 							}
 						},
 					},
 					activeContent: {
-        		amountCounter: {
+						amountCounter: {
 							view:"counter",
 							localId: "count_dtable",
 							width: 100,
+							css: "amountCounter",
 							step: 1,
 							value: 0,
 							min: 0,
 							max: 50,
 							height: 35,
-            },
-          },
+						},
+					},
 				}
 			]
 		};
@@ -78,19 +77,9 @@ export default class DataView extends JetView{
 	$getDatatable() {
 		return this.$$("datatable");
 	}
-	filterDatatableByTypeAndManufacture(id) {
-		console.log(id);
-		this.$$("datatable").filter(
-			function(obj) {
-				return obj.manufacturer == "5c9908bff43ceb47e847e18d";
-			}
-		);
-	}
 	do_status() {
 		const user = this.app.getService("user");
 		user.getStatus();
-		console.log(user);
-		console.log(user.getStatus());
 	}
 	do_logout() {
 		const user = this.app.getService("user");
@@ -101,7 +90,7 @@ export default class DataView extends JetView{
 	init(){
 		this.windowInfo = this.ui(WindowInfoView);
 		this.on(this.app, "filterDatatableByTypeAndManufacture", (data) => {
-	  	if(data) {
+			if(data) {
 				if (data[0] === 1) {
 					this.$$("datatable").filter(
 						function(obj) {
@@ -116,12 +105,10 @@ export default class DataView extends JetView{
 						}
 					);
 				}
-	  	}
+			}
 		});
-		this.on(this.app, "refreshDatatable", (data) => {
-			console.log('sadasdsd');
-    	this.$getDatatable().clearAll();
-			this.$getDatatable().load(this.$getDatatable().config.url)
-    });
+		this.on(this.app, "refreshDatatable", (newData) => {
+			this.$getDatatable().updateItem(newData.id, newData);
+		});
 	}
 }

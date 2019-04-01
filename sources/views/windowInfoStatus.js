@@ -13,8 +13,8 @@ export default class WindowInfoStatusView extends JetView {
 				view:"toolbar", margin:-4, cols:[
 					{ view:"label", label: "Decline reasons"},
 					{ view:"icon", icon:"wxi-close", click: () => {
-						this.$$('window').hide();
-						}
+						this.$$("window").hide();
+					}
 					}
 				]
 			},

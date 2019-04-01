@@ -33,8 +33,6 @@ app.get('/', passport.authenticate('jwt', {session: false}), role, async (req, r
 	}
 });
 
-
-
 app.get('/:id', passport.authenticate('jwt', {session: false}), async (req, res, err) => {
 	try {
 		const orders = await Orders.find({buyerId: req.user._id}).lean().exec();
@@ -44,11 +42,9 @@ app.get('/:id', passport.authenticate('jwt', {session: false}), async (req, res,
 		res.status(500).send("Something broke");
 	}
 });
+
 app.put('/:id', passport.authenticate('jwt', {session: false}), async (req, res, err) => {
 	try {
-		console.log(req.body.id);
-		console.log(req.body.status);
-		console.log(req.body.statusDescription);
 		await Orders.findOneAndUpdate(
 			{_id: req.body.id},
 			{
@@ -65,19 +61,18 @@ app.put('/:id', passport.authenticate('jwt', {session: false}), async (req, res,
 				res.send(docs.toClient());
 			}
 		);
-		// let sendData = await Promise.all(orders.map(ordersToClient));
-		// Promise.all(sendData).then((completed) => res.send(completed));
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}
 });
-app.post('/add', async (req, res) => {
+
+app.post('/add', passport.authenticate('jwt', {session: false}), async (req, res) => {
 	try {
 		const statusInProcess = await Statuses.findOne({index: "inprocess"}).exec();
 		let newOrder = await new Orders ({
 			productId: req.body.productId,
 			amount: req.body.amount,
-			buyerId: req.body.buyerId,
+			buyerId: req.user._id,
 			buyerName: req.body.buyerName,
 			buyerEmail: req.body.buyerEmail,
 			phone: req.body.phone,

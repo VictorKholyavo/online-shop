@@ -14,8 +14,8 @@ export default class WindowInfoView extends JetView {
 				view:"toolbar", margin:-4, cols:[
 					{ view:"label", label: "", localId: "titleOfProduct", template: "<i class='far fa-star'></i>" },
 					{ view:"icon", icon:"wxi-close", click: () => {
-						this.$$('window').hide();
-						}
+						this.$$("window").hide();
+					}
 					}
 				]
 			},
@@ -50,58 +50,37 @@ export default class WindowInfoView extends JetView {
 						]
 					}
 				]
-			},
-			onClick: {
-				// "far fa-star": (e, id) => {
-				"webixtype_base": (e, id) => {
-					console.log('asdadsds');
-				}
-			},
-			on: {
-				onHide: () => {
-					// this.$windowInfo().clear();
-				}
 			}
 		};
 	}
 	showWindow(values) {
 		this.$windowInfo().show();
-		let info = this.$$("info");
 		let rating = this.$$("rating");
-		let refreshDatatable = this.app
+		let refreshDatatable = this.app;
 		let image = "<img class='photo' src="+values.image+">";
 		this.$$("photo").define({template: "<div class='columnSettings'>"+ image +"</div>"});
 		this.$$("info").define({template: "<div class='columnSettings'><div class='rowSettings'><span class='infoProductHeader'>Name: </span>"+ values.name +"</div><div class='rowSettings'><span class='infoProductHeader'>Price: </span>"+ values.price +"</div></div>"});
-		this.$$("rating").define({template: "<div class='rowSettings'><span class='infoProductHeader'>Rating: </span>"+ values.rating +"</div>"})
+		this.$$("rating").define({template: "<div class='rowSettings'><span class='infoProductHeader'>Rating: </span>"+ values.rating +"</div>"});
 		this.$$("titleOfProduct").define({template: "<div class='headerInfo'>"+ values.name +"</div>"});
 		this.$$("info").refresh();
 		this.$$("rating").refresh();
 		this.$$("titleOfProduct").refresh();
 		this.$$("photo").refresh();
-		this.$$("addRating").attachEvent("onItemClick", function(id, e) {
+		this.$$("addRating").attachEvent("onItemClick", function() {
 			webix.ajax().post("http://localhost:3014/products/product", {productId: values.id}).then(function (response) {
 				response = response.json();
 				webix.ajax().put("http://localhost:3014/products/:id", {productId: response.id, rating: response.rating}).then(function (newData) {
-				 newData = newData.json();
-				 return newData
-			 }).then(function (newData) {
-				 rating.define({template: "<div class='rowSettings'><span class='infoProductHeader'>Rating: </span>"+ newData.rating +"</div>"})
-				 rating.refresh();
-				 refreshDatatable.callEvent("refreshDatatable", []);;
-			 })
-			})
-
+					newData = newData.json();
+					return newData;
+				}).then(function (newData) {
+					rating.define({template: "<div class='rowSettings'><span class='infoProductHeader'>Rating: </span>"+ newData.rating +"</div>"});
+					rating.refresh();
+					refreshDatatable.callEvent("refreshDatatable", [newData]);
+				});
+			});
 		});
 	}
 	init() {
-		// this.$$("addRating").attachEvent("onItemClick", function(id, e){
-		//    console.log('dasdasdsad');
-		//
-		// 	 // webix.ajax().put("http://localhost:3014/products", {statusId: values.status}).then(function (response) {
-		// 		//  response = response.json();
-		// 		//  console.log(response);
-		// 	 // })
-		// });
 	}
 	$windowInfo() {
 		return this.$$("window");
