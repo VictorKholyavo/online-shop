@@ -59,6 +59,7 @@ export default class FormView extends JetView {
 						{
 							view: "text",
 							localId: "password",
+							type:"password",
 							name: "password",
 							required: true,
 							batch: "b1",
