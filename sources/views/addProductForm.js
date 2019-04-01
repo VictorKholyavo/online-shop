@@ -14,6 +14,7 @@ export default class FormforProductView extends JetView {
 							name: "type",
 							localId: "type",
 							label: "Type of Product",
+							labelWidth: 120,
 							options: "http://localhost:3014/types"
 						},
 						{
@@ -21,6 +22,7 @@ export default class FormforProductView extends JetView {
 							name: "manufacturer",
 							localId: "manufacturer",
 							label: "Manufacturer",
+							labelWidth: 120,
 							options:{
 								on: {
 									onShow: function () {
@@ -38,12 +40,14 @@ export default class FormforProductView extends JetView {
 						{
 							view: "text",
 							name: "name",
-							label: "Name"
+							label: "Name",
+							labelWidth: 120,
 						},
 						{
 							view: "text",
 							name: "price",
-							label: "Price"
+							label: "Price",
+							labelWidth: 120,
 						},
 						{
 							view: "template",
