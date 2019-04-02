@@ -37,7 +37,12 @@ export default class FormForOrderView extends JetView {
 					label: "Delivery type",
 					invalidMessage: "Delivery Address can not be empty",
 					labelWidth:140,
-					options: "http://localhost:3014/delivery"
+					options: {
+						body: {
+							template: "#name#",
+							url: "http://localhost:3014/delivery"
+						}
+					}
 				},
 				{
 					view: "text",
@@ -51,7 +56,12 @@ export default class FormForOrderView extends JetView {
 					name: "payment",
 					label: "Payment type",
 					labelWidth:140,
-					options: "http://localhost:3014/payment",
+					options: {
+						body: {
+							template: "#name#",
+							url: "http://localhost:3014/payment",
+						}
+					},
 					required: true
 				},
 				{

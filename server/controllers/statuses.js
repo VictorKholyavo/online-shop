@@ -4,7 +4,7 @@ const Statuses = require('../schemas/statuses');
 const role = require('../middleware/permissions');
 const passport = require('passport');
 
-app.get('/', passport.authenticate('jwt', {session: false}), role, async (req, res, err) => {
+app.get('/', role, async (req, res, err) => {
 	try {
 		const statuses = await Statuses.find().exec();
 			res.json(statuses.map(status => status.toClient()));
@@ -13,7 +13,7 @@ app.get('/', passport.authenticate('jwt', {session: false}), role, async (req, r
 	}
 });
 
-app.post('/status', passport.authenticate('jwt', {session: false}), async (req, res, err) => {
+app.post('/status', async (req, res, err) => {
 	try {
 		const status = await Statuses.findById(req.body.statusId).exec();
 		return res.json(status.toClient());
@@ -22,7 +22,7 @@ app.post('/status', passport.authenticate('jwt', {session: false}), async (req, 
 	}
 });
 
-app.post('/startData', passport.authenticate('jwt', {session: false}), role, async (req, res) => {
+app.post('/startData', role, async (req, res) => {
 	try {
 		let startDataIndex = ["inprocess", "declined"]
 		let startDataStatuses = ["In process", "Declined"]

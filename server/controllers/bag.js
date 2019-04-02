@@ -16,7 +16,7 @@ app.get('/', async (req, res) => {
 	}
 });
 
-app.get('/user', passport.authenticate('jwt', {session: false}), async (req, res) => {
+app.get('/user', async (req, res) => {
 	try {
 		let sendData = [];
 		const userBag = await Bag.findOne({buyerId: req.user._id}).exec();
@@ -38,7 +38,7 @@ app.get('/user', passport.authenticate('jwt', {session: false}), async (req, res
 	}
 });
 
-app.get('/user/count', passport.authenticate('jwt', {session: false}), async (req, res) => {
+app.get('/user/count', async (req, res) => {
 	try {
 		const userBag = await Bag.findOne({buyerId: req.user._id}).exec();
 		return res.send(userBag)
@@ -48,7 +48,7 @@ app.get('/user/count', passport.authenticate('jwt', {session: false}), async (re
 	}
 });
 
-app.put('/addProduct', passport.authenticate('jwt', {session: false}), async (req, res) => {
+app.put('/addProduct', async (req, res) => {
 	try {
 		let product = await new Unit ({
 			productId: req.body.productId,
@@ -72,7 +72,7 @@ app.put('/addProduct', passport.authenticate('jwt', {session: false}), async (re
 	}
 });
 
-app.delete('/user/:id', passport.authenticate('jwt', {session: false}), async (req, res) => {
+app.delete('/user/:id', async (req, res) => {
 	try {
 		let orderId = mongoose.Types.ObjectId(req.body.id);
 		await Bag.findOneAndUpdate(
@@ -94,7 +94,7 @@ app.delete('/user/:id', passport.authenticate('jwt', {session: false}), async (r
 	}
 });
 
-app.put('/user/clearBag', passport.authenticate('jwt', {session: false}), async (req, res) => {
+app.put('/user/clearBag', async (req, res) => {
 	try {
 		let orderId = mongoose.Types.ObjectId(req.body.id);
 		await Bag.findOneAndUpdate(

@@ -4,23 +4,23 @@ const Delivery = require('../schemas/delivery');
 const role = require('../middleware/permissions');
 const passport = require('passport');
 
-app.get('/', passport.authenticate('jwt', {session: false}), async (req, res, err) => {
+app.get('/', async (req, res, err) => {
 	try {
 		const deliveries = await Delivery.find().exec();
-			res.json(deliveries.map(delivery => delivery.toClient()));
+		res.json(deliveries);
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}
 });
 
-app.post('/startData', passport.authenticate('jwt', {session: false}), role, async (req, res) => {
+app.post('/startData', role, async (req, res) => {
 	try {
-		let startDataIndex = ["master", "pickup"];
+		let startDataId = ["master", "pickup"];
 		let startDataDelivery = ["Master", "Pick Up"];
 		for (let i = 0; i < startDataDelivery.length; i++) {
 			let newDelivery = await new Delivery ({
-				index: startDataIndex[i],
-				value: startDataDelivery[i]
+				_id: startDataId[i],
+				name: startDataDelivery[i]
 			});
 			newDelivery.save(function (err, docs) {
 				console.log(docs);

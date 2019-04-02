@@ -13,7 +13,7 @@ app.get('/', async (req, res) => {
 	}
 });
 
-app.post('/product', passport.authenticate('jwt', {session: false}), async (req, res) => {
+app.post('/product', async (req, res) => {
 	try {
 		const product = await Products.findById(req.body.productId, function (err, docs) {
 			res.send(docs.toClient())
@@ -42,7 +42,7 @@ app.post('/', async (req, res) => {
 		res.status(500).send("Something broke");
 	}
 })
-app.put('/:id', passport.authenticate('jwt', {session: false}), async (req, res, err) => {
+app.put('/:id', async (req, res, err) => {
 	try {
 		req.body.rating = parseInt(req.body.rating, 10)
 		await Products.findOneAndUpdate(

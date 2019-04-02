@@ -131,7 +131,6 @@ app.post('/registration', async (req, res, next) => {
 
 app.put('/:id', passport.authenticate('jwt', {session: false}), role, async (req, res, err) => {
 	try {
-		console.log(req.body);
 		await User.findOneAndUpdate(
 			{_id: req.body.id},
 			{

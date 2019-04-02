@@ -3,15 +3,11 @@ const Schema = mongoose.Schema;
 const Types = require('../schemas/types');
 
 const ManufactureSchema = new Schema({
-	value: {
+	title: {
 		type: String,
     required: true
 	},
-	type: {
-		type: String,
-		required: true
-	},
-	products: []
+	types: []
 });
 
 ManufactureSchema.methods.toClient = function toClient() {

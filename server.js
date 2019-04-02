@@ -52,10 +52,10 @@ mongoose.connect(`mongodb://localhost:27017/myapir`, function (err) {
 	app.use('/statuses', passport.authenticate('jwt', {session: false}), StatusesController);
 	app.use('/payment', passport.authenticate('jwt', {session: false}), PaymentController);
 	app.use('/delivery', passport.authenticate('jwt', {session: false}), DeliveryController);
-	app.use('/types', TypesController);
+	app.use('/types', passport.authenticate('jwt', {session: false}), TypesController);
 	app.use('/manufacturers', passport.authenticate('jwt', {session: false}), ManufacturersController);
 	app.use('/upload', passport.authenticate('jwt', {session: false}), ImageController);
-	app.use('/bag', BagController);
+	app.use('/bag', passport.authenticate('jwt', {session: false}), BagController);
 	app.use('/orders', passport.authenticate('jwt', {session: false}), OrderController);
 	app.listen(3014, function () {
 		console.log('API app started');

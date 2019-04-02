@@ -4,23 +4,14 @@ const mongoose = require('mongoose');
 const Manufacturers = require('../schemas/manufacturers');
 const Types = require('../schemas/types');
 
-app.get('/', async (req, res) => {
-	try {
-		const manufacturers = await Manufacturers.find().exec();
-			res.json(manufacturers.map(manufacturer => manufacturer.toClient()));
-	} catch (error) {
-		res.status(500).send("Something broke");
-	}
-})
-
 app.get('/all', async (req, res) => {
 	try {
 		const manufacturers = await Manufacturers.find().exec();
-		for (let i = 0; i < manufacturers.length; i++) {
-			await Types.findById(manufacturers[i].type, function (err, docs) {
-				manufacturers[i].typeByString = docs.value;
-			})
-		}
+		// for (let i = 0; i < manufacturers.length; i++) {
+		// 	await Types.findById(manufacturers[i].type, function (err, docs) {
+		// 		manufacturers[i].typeByString = docs.value;
+		// 	})
+		// }
 		res.send(manufacturers.map(manufacture => manufacture.toClient()));
 	} catch (error) {
 		res.status(500).send("Something broke");
@@ -103,8 +94,7 @@ app.post('/startData', async (req, res) => {
 app.post('/', async (req, res) => {
 	try {
 		let newManufacture = await new Manufacturers({
-			value: req.body.value,
-			type: req.body.type
+			title: req.body.title
 		});
 		newManufacture.save(function(err, docs) {
 			if (err) {

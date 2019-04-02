@@ -16,12 +16,14 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.post('/', upload.single('upload'), async function(req, res) {
+	let path = req.file.destination + "/" + req.file.originalname;
+
 	const imageOne = await PhotoSchema ({
 		_id: new mongoose.Types.ObjectId(),
-		name: req.body.name,
+		path: path,
 	})
 	imageOne.save();
-	let path = req.file.destination + "/" + req.file.originalname;
+
 	res.send({"server": "server", "path": path})
 });
 

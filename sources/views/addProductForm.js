@@ -106,7 +106,14 @@ export default class FormforProductView extends JetView {
 									click:() => {
 										this.show("/adminMenu/orders");
 									}
-								}
+								},
+								// {
+								// 	view: "button",
+								// 	value: "add payments",
+								// 	click: () => {
+								// 		webix.ajax().post("http://localhost:3014/delivery/startData", []);
+								// 	}
+								// }
 							]
 						}
 					],
@@ -114,18 +121,90 @@ export default class FormforProductView extends JetView {
 						$all: webix.rules.isNotEmpty
 					}
 				},
+				// {
+				// 	view: "button",
+				// 	localId: "addType",
+				// 	type: "form",
+				// 	value: "Add Types and Manufactures of Products (start data)",
+				// 	click: () => {
+				// 		this.addStartData();
+				// 	}
+				// },
 				{
-					view: "button",
-					localId: "addType",
-					type: "form",
-					value: "Add Types and Manufactures of Products (start data)",
-					click: () => {
-						this.addStartData();
-					}
+					cols: [
+						{
+							view: "form",
+							localId: "formForManufactures",
+							scroll: false,
+							elements: [
+								{
+									view: "text",
+									name: "title",
+									label: "Title",
+									labelWidth: 120,
+								},
+								{
+									view: "button",
+									localId: "updateButton",
+									value: "Save Manufacturer",
+									click: () => {
+										const values = this.$getFormForManufactures().getValues();
+										const form = this.$getFormForManufactures();
+										webix.ajax().post("http://localhost:3014/manufacturers", values).then(function () {
+											form.clear();
+											form.clearValidation();
+										})
+									}
+								},
+							],
+							rules: {
+								$all: webix.rules.isNotEmpty
+							}
+						},
+						{
+							view: "form",
+							localId: "formForTypes",
+							scroll: false,
+							elements: [
+								{
+									view: "richselect",
+									name: "manufacturer",
+									localId: "manufacturerForType",
+									label: "Manufacturer",
+									labelWidth: 120,
+									options: {
+										body: {
+											template: "#title#",
+											url: "http://localhost:3014/manufacturers/all"
+										}
+									}
+								},
+								{
+									view: "text",
+									name: "title",
+									label: "Title",
+									labelWidth: 120,
+								},
+								{
+									view: "button",
+									localId: "updateButton",
+									value: "Save Type of Product",
+									click: () => {
+										const values = this.$getFormForTypes().getValues();
+										webix.ajax().post("http://localhost:3014/types", values).then(function () {
+										}, function (err) {
+											webix.message({type: "error", text: err.responseText});
+										});
+									}
+								},
+							],
+							rules: {
+								$all: webix.rules.isNotEmpty
+							}
+						}
+					]
 				},
-				{
-
-				}
+				{}
 			]
 		};
 	}
@@ -172,5 +251,11 @@ export default class FormforProductView extends JetView {
 	}
 	$getForm() {
 		return this.$$("form");
+	}
+	$getFormForManufactures() {
+		return this.$$("formForManufactures");
+	}
+	$getFormForTypes() {
+		return this.$$("formForTypes");
 	}
 }

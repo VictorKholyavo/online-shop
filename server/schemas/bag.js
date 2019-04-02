@@ -17,21 +17,6 @@ BagSchema.methods.toClient = function toClient() {
   delete obj._id;
   return obj;
 }
-
-BagSchema.statics.findProduct = function findProduct(productId, callback) {
-	Products.findById(
-		productId,
-		function (err, doc) {
-			if (err) {
-				let error = "No groups found";
-				return callback(error);
-			}
-			else {
-				return callback(null, doc)
-			}
-		}
-	);
-}
 // Компилируем модель из схемы
 const Bag = mongoose.model('Bag', BagSchema);
 

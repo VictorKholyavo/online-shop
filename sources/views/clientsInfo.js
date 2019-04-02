@@ -35,6 +35,6 @@ export default class DataView extends JetView{
 	$getDatatable() {
 		return this.$$("datatable");
 	}
-	init(){
+	init() {
 	}
 }

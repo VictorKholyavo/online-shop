@@ -23,7 +23,7 @@ const ordersToClient = async (order) => {
 	return order
 }
 
-app.get('/', passport.authenticate('jwt', {session: false}), role, async (req, res, err) => {
+app.get('/', role, async (req, res, err) => {
 	try {
 		const orders = await Orders.find().lean().exec();
 		let sendData = await Promise.all(orders.map(ordersToClient));
@@ -33,7 +33,7 @@ app.get('/', passport.authenticate('jwt', {session: false}), role, async (req, r
 	}
 });
 
-app.get('/:id', passport.authenticate('jwt', {session: false}), async (req, res, err) => {
+app.get('/:id', async (req, res, err) => {
 	try {
 		const orders = await Orders.find({buyerId: req.user._id}).lean().exec();
 		let sendData = await Promise.all(orders.map(ordersToClient));
@@ -43,7 +43,7 @@ app.get('/:id', passport.authenticate('jwt', {session: false}), async (req, res,
 	}
 });
 
-app.put('/:id', passport.authenticate('jwt', {session: false}), async (req, res, err) => {
+app.put('/:id', async (req, res, err) => {
 	try {
 		await Orders.findOneAndUpdate(
 			{_id: req.body.id},
@@ -66,7 +66,7 @@ app.put('/:id', passport.authenticate('jwt', {session: false}), async (req, res,
 	}
 });
 
-app.post('/add', passport.authenticate('jwt', {session: false}), async (req, res) => {
+app.post('/add', async (req, res) => {
 	try {
 		const statusInProcess = await Statuses.findOne({index: "inprocess"}).exec();
 		let newOrder = await new Orders ({
