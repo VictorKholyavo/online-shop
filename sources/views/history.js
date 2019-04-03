@@ -23,13 +23,21 @@ export default class DataView extends JetView{
 						// 	return "<div class='columnSettings'>"+ photo +"</div>"
 						// }
 						// },
-						{id: "productTitle", header:"Product", fillspace: true},
+						{id: "productId", header:"Product", fillspace: true, template: (obj) => {
+							return obj.productId.name
+						}},
 						{id: "amount", header: "Amount", width:180},
 						{id: "address", header: "Address", fillspace: true},
-						{id: "deliveryTitle", header: "Delivery", fillspace: true},
-						{id: "paymentTitle", header: "Payment", fillspace: true},
+						{id: "delivery", header: "Delivery", fillspace: true, template: (obj) => {
+							return obj.delivery.name
+						}},
+						{id: "payment", header: "Payment", fillspace: true, template: (obj) => {
+							return obj.payment.name
+						}},
 						{id: "date", header:"Date"},
-						{id: "statusTitle", header:"Status"},
+						{id: "status", header:"Status", template: (obj) => {
+							return obj.status.name
+						}},
 					],
 					url: "http://localhost:3014/orders/:id",
 					rowHeight: 80,
@@ -37,6 +45,7 @@ export default class DataView extends JetView{
 					on: {
 						onItemClick: (id) => {
 							let values = this.$$("datatable").getItem(id);
+							console.log(values);
 							let windowInfoStatus = this.windowInfoStatusView;
 							if (id.column == "statusTitle") {
 								webix.ajax().post("http://localhost:3014/statuses/status", {statusId: values.status}).then(function (response) {

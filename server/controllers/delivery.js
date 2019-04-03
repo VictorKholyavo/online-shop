@@ -7,7 +7,7 @@ const passport = require('passport');
 app.get('/', async (req, res, err) => {
 	try {
 		const deliveries = await Delivery.find().exec();
-		res.json(deliveries);
+		res.send(deliveries.map(delivery => delivery.toClient()));
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}
@@ -15,11 +15,11 @@ app.get('/', async (req, res, err) => {
 
 app.post('/startData', role, async (req, res) => {
 	try {
-		let startDataId = ["master", "pickup"];
+		let startDataIndex = ["master", "pickup"];
 		let startDataDelivery = ["Master", "Pick Up"];
 		for (let i = 0; i < startDataDelivery.length; i++) {
 			let newDelivery = await new Delivery ({
-				_id: startDataId[i],
+				index: startDataIndex[i],
 				name: startDataDelivery[i]
 			});
 			newDelivery.save(function (err, docs) {

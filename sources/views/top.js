@@ -10,11 +10,18 @@ export default class TopView extends JetView {
 			activeTitle: true,
 			url: "http://localhost:3014/types",
 			select: true,
+			scheme: {
+				$init: function (obj) {
+					if (!obj.value) {
+						obj.value = obj.title || obj.manufacturerTitle;
+					}
+				}
+			},
 			on: {
 				onItemClick: (id) => {
 					this.show("/top/data");
-					let level = this.$$("tree").getItem(id).$level;
-					let data = [level, id];
+					let item = this.$$("tree").getItem(id);
+					let data = [item.$level, item.$id, item.$parent || null];
 					this.app.callEvent("filterDatatableByTypeAndManufacture", [data]);
 				}
 			}

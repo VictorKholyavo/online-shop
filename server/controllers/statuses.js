@@ -7,7 +7,7 @@ const passport = require('passport');
 app.get('/', role, async (req, res, err) => {
 	try {
 		const statuses = await Statuses.find().exec();
-			res.json(statuses.map(status => status.toClient()));
+		res.send(statuses.map(status => status.toClient()));
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}
@@ -29,7 +29,7 @@ app.post('/startData', role, async (req, res) => {
 		for (let i = 0; i < startDataStatuses.length; i++) {
 			let newStatus = await new Statuses ({
 				index: startDataIndex[i],
-				value: startDataStatuses[i]
+				name: startDataStatuses[i]
 			});
 			newStatus.save(function (err, docs) {
 				console.log(docs);

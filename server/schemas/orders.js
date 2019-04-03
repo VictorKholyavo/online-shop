@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Statuses = require('../schemas/statuses');
+const Delivery = require('../schemas/delivery');
+const Products = require('../schemas/products');
 
 const OrderSchema = new Schema({
 	productId: {
-		type: String,
-    required: true
+		type: Schema.Types.ObjectId,
+		ref: 'Product'
 	},
 	amount: {
 		type: Number,
@@ -32,18 +34,20 @@ const OrderSchema = new Schema({
     required: true
 	},
 	delivery: {
-		type: String,
-    required: true
+		type: Schema.Types.ObjectId,
+		ref: 'Delivery'
 	},
 	payment: {
-		type: String
+		type: Schema.Types.ObjectId,
+		ref: 'Payment'
 	},
 	date: {
     type: Date,
     default: Date.now,
   },
 	status: {
-		type: String
+		type: Schema.Types.ObjectId,
+		ref: 'Statuses'
 	},
 	statusDescription: {
 		type: String

@@ -12,6 +12,7 @@ app.get('/all', async (req, res) => {
 		// 		manufacturers[i].typeByString = docs.value;
 		// 	})
 		// }
+		// console.log(manufacturers);
 		res.send(manufacturers.map(manufacture => manufacture.toClient()));
 	} catch (error) {
 		res.status(500).send("Something broke");

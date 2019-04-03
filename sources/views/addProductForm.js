@@ -11,31 +11,48 @@ export default class FormforProductView extends JetView {
 					elements: [
 						{
 							view: "richselect",
-							name: "type",
-							localId: "type",
-							label: "Type of Product",
-							labelWidth: 120,
-							options: "http://localhost:3014/types"
-						},
-						{
-							view: "richselect",
 							name: "manufacturer",
 							localId: "manufacturer",
 							label: "Manufacturer",
 							labelWidth: 120,
+							on: {
+								onChange: () => {
+									this.$getTypeRichselect().setValue();
+								}
+							},
 							options:{
+								body: {
+									template: "#title#",
+									url:"http://localhost:3014/manufacturers/all",
+								}
+							},
+						},
+						{
+							view: "richselect",
+							name: "type",
+							localId: "type",
+							label: "Type of Product",
+							labelWidth: 120,
+							options: {
 								on: {
 									onShow: function () {
-										let typeValue = this.$scope.$$("type").data.value;
+										let typeValue = this.$scope.$$("manufacturer").data.value;
+										console.log(typeValue);
 										this.getBody().filter(function(obj) {
-											return obj.type == typeValue;
+											console.log(obj);
+											for (var i = 0; i < obj.data.length; i++) {
+												 if (obj.data[i].$id == typeValue) {
+													return obj
+												 }
+											}
 										});
 									}
 								},
 								body: {
-									url:"http://localhost:3014/manufacturers/all",
+									template: "#title#",
+									url: "http://localhost:3014/types"
 								}
-							},
+							}
 						},
 						{
 							view: "text",
@@ -106,14 +123,7 @@ export default class FormforProductView extends JetView {
 									click:() => {
 										this.show("/adminMenu/orders");
 									}
-								},
-								// {
-								// 	view: "button",
-								// 	value: "add payments",
-								// 	click: () => {
-								// 		webix.ajax().post("http://localhost:3014/delivery/startData", []);
-								// 	}
-								// }
+								}
 							]
 						}
 					],
@@ -121,15 +131,6 @@ export default class FormforProductView extends JetView {
 						$all: webix.rules.isNotEmpty
 					}
 				},
-				// {
-				// 	view: "button",
-				// 	localId: "addType",
-				// 	type: "form",
-				// 	value: "Add Types and Manufactures of Products (start data)",
-				// 	click: () => {
-				// 		this.addStartData();
-				// 	}
-				// },
 				{
 					cols: [
 						{
@@ -191,9 +192,14 @@ export default class FormforProductView extends JetView {
 									value: "Save Type of Product",
 									click: () => {
 										const values = this.$getFormForTypes().getValues();
+										const form = this.$getFormForTypes();
 										webix.ajax().post("http://localhost:3014/types", values).then(function () {
+											form.clear();
+											form.clearValidation();
 										}, function (err) {
 											webix.message({type: "error", text: err.responseText});
+											form.clear();
+											form.clearValidation();
 										});
 									}
 								},
@@ -203,6 +209,15 @@ export default class FormforProductView extends JetView {
 							}
 						}
 					]
+				},
+				{
+					view: "button",
+					localId: "addType",
+					type: "form",
+					value: "Add Payments, Deliveries and Statuses (start data)",
+					click: () => {
+						this.addStartData();
+					}
 				},
 				{}
 			]
@@ -215,15 +230,11 @@ export default class FormforProductView extends JetView {
 		return this.$$("manufacturer");
 	}
 	addStartData() {
-		webix.ajax().post("http://localhost:3014/types/startData", []).then(
-			webix.ajax().post("http://localhost:3014/manufacturers/startData", []).then(
-				webix.ajax().post("http://localhost:3014/statuses/startData", []).then(
-					webix.ajax().post("http://localhost:3014/payment/startData", []).then(
-						webix.ajax().post("http://localhost:3014/delivery/startData", []).then()
-					)
-				)
+		webix.ajax().post("http://localhost:3014/statuses/startData", []).then(
+			webix.ajax().post("http://localhost:3014/payment/startData", []).then(
+				webix.ajax().post("http://localhost:3014/delivery/startData", []).then()
 			)
-		);
+		)
 	}
 	saveProduct(values) {
 		if (this.$getForm().validate()) {

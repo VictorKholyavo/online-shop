@@ -7,8 +7,7 @@ const passport = require('passport');
 app.get('/', async (req, res, err) => {
 	try {
 		const payments = await Payment.find().exec();
-		console.log(payments);
-		res.json(payments);
+		res.send(payments.map(payment => payment.toClient()));
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}
@@ -16,11 +15,11 @@ app.get('/', async (req, res, err) => {
 
 app.post('/startData', role, async (req, res) => {
 	try {
-		let startDataId = ["cash", "card"];
+		let startDataIndex = ["cash", "card"];
 		let startDataPayment = ["Cash", "Card"];
 		for (let i = 0; i < startDataPayment.length; i++) {
 			let newPayment = await new Payment ({
-				_id: startDataId[i],
+				index: startDataIndex[i],
 				name: startDataPayment[i]
 			});
 			newPayment.save(function (err, docs) {

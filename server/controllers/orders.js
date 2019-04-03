@@ -35,9 +35,11 @@ app.get('/', role, async (req, res, err) => {
 
 app.get('/:id', async (req, res, err) => {
 	try {
-		const orders = await Orders.find({buyerId: req.user._id}).lean().exec();
-		let sendData = await Promise.all(orders.map(ordersToClient));
-		Promise.all(sendData).then((completed) => res.send(completed));
+		const orders = await Orders.find({buyerId: req.user._id}).populate('productId').populate('delivery').populate('payment').populate('status').exec();
+		console.log(orders);
+		res.send(orders.map((order) => order.toClient()));
+		// let sendData = await Promise.all(orders.map(ordersToClient));
+		// Promise.all(sendData).then((completed) => res.send(completed));
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}
@@ -69,6 +71,7 @@ app.put('/:id', async (req, res, err) => {
 app.post('/add', async (req, res) => {
 	try {
 		const statusInProcess = await Statuses.findOne({index: "inprocess"}).exec();
+		const delivery = await Delivery.findById(req.body.delivery).exec();
 		let newOrder = await new Orders ({
 			productId: req.body.productId,
 			amount: req.body.amount,
@@ -81,35 +84,8 @@ app.post('/add', async (req, res) => {
 			payment: req.body.payment,
 			status: statusInProcess._id
 		});
-		newOrder.save()
+		newOrder.save();
 		return res.send(newOrder);
-	} catch (error) {
-		res.status(500).send("Something broke");
-	}
-})
-
-app.post('/', async (req, res) => {
-	try {
-		let newType = await new Types({
-			value: req.body.value
-		});
-		newType.save(function(err, docs) {
-			if (err) {
-				return res.status(401).send("Can't add new type")
-			}
-			return res.json(newType)
-		});
-	} catch (error) {
-		res.status(500).send("Something broke");
-	}
-})
-
-app.delete('/:id', async (req, res) => {
-	try {
-		await Types.findOneAndRemove(
-			{ _id: req.params.id },
-		);
-		res.send({id: req.params.id})
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}

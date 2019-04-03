@@ -101,7 +101,9 @@ export default class DataView extends JetView{
 				else if (data[0] === 2) {
 					this.$$("datatable").filter(
 						function(obj) {
-							return obj.manufacturer === data[1];
+							if (obj.manufacturer === data[1] && obj.type === data[2]) {
+								return obj
+							}
 						}
 					);
 				}

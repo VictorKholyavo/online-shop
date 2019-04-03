@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const PaymentSchema = new Schema({
-	_id: {
+	index: {
 		type: String,
 		required: true
 	},
@@ -12,6 +12,13 @@ const PaymentSchema = new Schema({
 	}
 });
 
+PaymentSchema.methods.toClient = function toClient() {
+  const obj = this.toObject();
+  // // Rename fields:
+  obj.id = obj._id;
+  delete obj._id;
+  return obj;
+}
 // Компилируем модель из схемы
 const Payment = mongoose.model('Payment', PaymentSchema);
 

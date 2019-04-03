@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const DeliverySchema = new Schema({
-	_id: {
+	index: {
 		type: String,
 		required: true
 	},
@@ -11,6 +11,14 @@ const DeliverySchema = new Schema({
     required: true
 	}
 });
+
+DeliverySchema.methods.toClient = function toClient() {
+  const obj = this.toObject();
+  // // Rename fields:
+  obj.id = obj._id;
+  delete obj._id;
+  return obj;
+}
 
 // Компилируем модель из схемы
 const Delivery = mongoose.model('Delivery', DeliverySchema);

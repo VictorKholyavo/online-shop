@@ -6,7 +6,7 @@ const StatusSchema = new Schema({
 		type: String,
 		required: true
 	},
-	value: {
+	name: {
 		type: String,
     required: true
 	}
@@ -15,7 +15,7 @@ const StatusSchema = new Schema({
 StatusSchema.methods.toClient = function toClient() {
   const obj = this.toObject();
   // // Rename fields:
-  obj.id = obj._id.toHexString();
+  obj.id = obj._id;
   delete obj._id;
   return obj;
 }
