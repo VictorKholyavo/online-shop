@@ -14,6 +14,7 @@ export default class ChangeStatusWindowView extends JetView {
 					label: "Choose Status",
 					options: {
 						body: {
+							template: "#name#",
 							url: "http://localhost:3014/statuses",
 						}
 					},

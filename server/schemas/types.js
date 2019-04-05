@@ -8,7 +8,10 @@ const TypeSchema = new Schema({
     required: true,
 		unique: true
 	},
-	manufacturers: []
+	manufacturers: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Manufacture'
+	}]
 });
 
 TypeSchema.plugin(uniqueValidator);

@@ -152,6 +152,8 @@ export default class FormforProductView extends JetView {
 										webix.ajax().post("http://localhost:3014/manufacturers", values).then(function () {
 											form.clear();
 											form.clearValidation();
+										}, function (err) {
+											webix.message({type: "error", text: err.responseText});
 										});
 									}
 								},

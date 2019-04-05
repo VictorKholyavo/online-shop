@@ -20,10 +20,16 @@ export default class DataView extends JetView{
 						{id: "buyerEmail", header: "buyerEmail", fillspace: true},
 						{id: "phone", header: "phone", width: 100},
 						{id: "address", header: "address", width: 150},
-						{id: "deliveryTitle", header: "delivery", width: 100},
-						{id: "paymentTitle", header: "payment", width: 100},
+						{id: "delivery", header: "Delivery", fillspace: true, template: (obj) => {
+							return obj.delivery.name;
+						}},
+						{id: "payment", header: "Payment", fillspace: true, template: (obj) => {
+							return obj.payment.name;
+						}},
 						{id: "date", header:"date", fillspace: true},
-						{id: "statusTitle", header:"Status"}
+						{id: "status", header:"Status", template: (obj) => {
+							return obj.status.name;
+						}}
 					],
 					url: "http://localhost:3014/orders",
 					save: {
@@ -34,7 +40,7 @@ export default class DataView extends JetView{
 						onItemClick: (id) => {
 							let datatable = this.$$("datatable");
 							let values = this.$$("datatable").getItem(id);
-							if (id.column == "statusTitle") {
+							if (id.column == "status") {
 								let form = this.ChangeStatusWindowView;
 								this.ChangeStatusWindowView.showWindow({status: values.status, statusDescription: values.statusDescription}, function(data) {
 									datatable.updateItem(id.row, data);

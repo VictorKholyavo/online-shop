@@ -25,8 +25,20 @@ const ordersToClient = async (order) => {
 
 app.get('/', role, async (req, res, err) => {
 	try {
-		const orders = await Orders.find().populate('productId').populate('delivery').populate('payment').populate('status').exec();
-		res.send(orders.map((order) => order.toClient()));
+		const orders = await Orders.find().populate('productId').populate('delivery').populate('payment').populate('status');
+		// 	return res.json(orders.map(function (order) {
+		// 		order.id = order._id;
+		// 		order.status.id = order.status._id;
+		// 		order.payment.id = order.payment._id;
+		// 		order.delivery.id = order.delivery._id;
+		// 		delete order._id;
+		// 		delete order.status._id;
+		// 		delete order.payment._id;
+		// 		delete order.delivery._id;
+		// 		return order
+		// 	}));
+		// });
+		res.send(orders.map(order => order.toClient()));
 		// let sendData = await Promise.all(orders.map(ordersToClient));
 		// Promise.all(sendData).then((completed) => res.send(completed));
 	} catch (error) {
@@ -37,7 +49,6 @@ app.get('/', role, async (req, res, err) => {
 app.get('/:id', async (req, res, err) => {
 	try {
 		const orders = await Orders.find({buyerId: req.user._id}).populate('productId').populate('delivery').populate('payment').populate('status').exec();
-		console.log(orders);
 		res.send(orders.map((order) => order.toClient()));
 		// let sendData = await Promise.all(orders.map(ordersToClient));
 		// Promise.all(sendData).then((completed) => res.send(completed));
@@ -61,7 +72,9 @@ app.put('/:id', async (req, res, err) => {
 			},
 			function (err, docs) {
 				console.log(docs);
-				res.send(docs.toClient());
+				docs.id = docs._id;
+				delete docs._id;
+				res.send(docs)
 			}
 		);
 	} catch (error) {

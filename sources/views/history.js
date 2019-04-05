@@ -34,8 +34,8 @@ export default class DataView extends JetView{
 						onItemClick: (id) => {
 							let values = this.$$("datatable").getItem(id);
 							let windowInfoStatus = this.windowInfoStatusView;
-							if (id.column == "statusTitle") {
-								webix.ajax().post("http://localhost:3014/statuses/status", {statusId: values.status}).then(function (response) {
+							if (id.column == "status") {
+								webix.ajax().post("http://localhost:3014/statuses/status", {statusId: values.status.id}).then(function (response) {
 									response = response.json();
 									if (response.index == "declined") {
 										windowInfoStatus.showWindow(values);

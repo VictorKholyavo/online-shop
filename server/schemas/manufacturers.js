@@ -1,14 +1,21 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Types = require('../schemas/types');
+const uniqueValidator = require('mongoose-unique-validator');
 
 const ManufactureSchema = new Schema({
 	title: {
 		type: String,
-    required: true
+    required: true,
+		unique: true
 	},
-	types: []
+	types: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Type'
+	}]
 });
+
+ManufactureSchema.plugin(uniqueValidator);
 
 ManufactureSchema.methods.toClient = function toClient() {
   const obj = this.toObject();

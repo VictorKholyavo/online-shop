@@ -58,6 +58,13 @@ OrderSchema.methods.toClient = function toClient() {
   const obj = this.toObject();
   // // Rename fields:
   obj.id = obj._id.toHexString();
+	obj.status.id = obj.status._id;
+	obj.payment.id = obj.payment._id;
+	obj.delivery.id = obj.delivery._id;
+
+	delete obj.status._id;
+	delete obj.payment._id;
+	delete obj.delivery._id;
   delete obj._id;
   return obj;
 }
