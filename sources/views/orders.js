@@ -12,7 +12,9 @@ export default class DataView extends JetView{
 					css:"webix_shadow_medium",
 					editable: true,
 					columns: [
-						{id: "productTitle", header:"Product", fillspace: true},
+						{id: "productId", header:"Product", fillspace: true, template: (obj) => {
+							return obj.productId.name;
+						}},
 						{id: "amount", header: "Amount", width: 80},
 						{id: "buyerName", header: "buyerName", fillspace: true},
 						{id: "buyerEmail", header: "buyerEmail", fillspace: true},

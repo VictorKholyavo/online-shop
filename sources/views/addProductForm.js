@@ -37,13 +37,11 @@ export default class FormforProductView extends JetView {
 								on: {
 									onShow: function () {
 										let typeValue = this.$scope.$$("manufacturer").data.value;
-										console.log(typeValue);
 										this.getBody().filter(function(obj) {
-											console.log(obj);
 											for (var i = 0; i < obj.data.length; i++) {
-												 if (obj.data[i].$id == typeValue) {
-													return obj
-												 }
+												if (obj.data[i].$id == typeValue) {
+													return obj;
+												}
 											}
 										});
 									}
@@ -154,7 +152,7 @@ export default class FormforProductView extends JetView {
 										webix.ajax().post("http://localhost:3014/manufacturers", values).then(function () {
 											form.clear();
 											form.clearValidation();
-										})
+										});
 									}
 								},
 							],
@@ -234,7 +232,7 @@ export default class FormforProductView extends JetView {
 			webix.ajax().post("http://localhost:3014/payment/startData", []).then(
 				webix.ajax().post("http://localhost:3014/delivery/startData", []).then()
 			)
-		)
+		);
 	}
 	saveProduct(values) {
 		if (this.$getForm().validate()) {

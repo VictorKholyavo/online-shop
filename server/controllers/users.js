@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const session = require("express-session");
-// const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Bag = require('../schemas/bag');
 const User = require('../schemas/users');
@@ -48,9 +48,9 @@ passport.use(new LocalStrategy({ usernameField: "email" },
 			if (!user) {
 				return done(null, false);
 			}
-			if (user.password != password) {
-				return done(null, false);
-			}
+			if (!bcrypt.compareSync(password, user.password)) {
+        return done(null, false);
+      }
 			return done(null, user);
 		});
 	}

@@ -25,9 +25,10 @@ const ordersToClient = async (order) => {
 
 app.get('/', role, async (req, res, err) => {
 	try {
-		const orders = await Orders.find().lean().exec();
-		let sendData = await Promise.all(orders.map(ordersToClient));
-		Promise.all(sendData).then((completed) => res.send(completed));
+		const orders = await Orders.find().populate('productId').populate('delivery').populate('payment').populate('status').exec();
+		res.send(orders.map((order) => order.toClient()));
+		// let sendData = await Promise.all(orders.map(ordersToClient));
+		// Promise.all(sendData).then((completed) => res.send(completed));
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}
