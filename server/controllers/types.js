@@ -4,16 +4,6 @@ const mongoose = require('mongoose');
 const Types = require('../schemas/types');
 const Manufacturers = require('../schemas/manufacturers');
 const passport = require('passport');
-//
-// app.get('/', async (req, res) => {
-// 	try {
-// 		const types = await Types.find().populate('manufacturers').lean().exec()
-// 		console.log(types);
-// 		console.log(types[0].manufacturers);
-// 	} catch (error) {
-// 		res.status(500).send("Something broke");
-// 	}
-// });
 
 app.get('/', async (req, res) => {
 	try {
@@ -36,22 +26,6 @@ app.get('/', async (req, res) => {
 		res.status(500).send("Something broke");
 	}
 });
-
-app.post('/startData', async (req, res) => {
-	try {
-		let startDataTypes = ["Phones", "Notebooks", "TV"]
-		for (let i = 0; i < startDataTypes.length; i++) {
-			let newType = await new Types({
-				value: startDataTypes[i]
-			});
-			newType.save();
-		}
-		return res.json(startDataTypes)
-
-	} catch (error) {
-		res.status(500).send("Something broke");
-	}
-})
 
 app.post('/', async (req, res) => {
 	try {

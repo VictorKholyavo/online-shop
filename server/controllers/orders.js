@@ -8,39 +8,10 @@ const Delivery = require('../schemas/delivery');
 const role = require('../middleware/permissions');
 const passport = require('passport');
 
-const ordersToClient = async (order) => {
-	let product = await Products.findById(order.productId).lean().exec();
-	let status = await Statuses.findById(order.status).lean().exec();
-	let payment = await Payment.findById(order.payment).lean().exec();
-	let delivery = await Delivery.findById(order.delivery).lean().exec();
-	order.productTitle = product.name;
-	order.statusTitle = status.value;
-	order.statusIndex = status.index;
-	order.paymentTitle = payment.value;
-	order.deliveryTitle = delivery.value;
-	order.id = order._id.toHexString();
-	delete order._id;
-	return order
-}
-
 app.get('/', role, async (req, res, err) => {
 	try {
 		const orders = await Orders.find().populate('productId').populate('delivery').populate('payment').populate('status');
-		// 	return res.json(orders.map(function (order) {
-		// 		order.id = order._id;
-		// 		order.status.id = order.status._id;
-		// 		order.payment.id = order.payment._id;
-		// 		order.delivery.id = order.delivery._id;
-		// 		delete order._id;
-		// 		delete order.status._id;
-		// 		delete order.payment._id;
-		// 		delete order.delivery._id;
-		// 		return order
-		// 	}));
-		// });
 		res.send(orders.map(order => order.toClient()));
-		// let sendData = await Promise.all(orders.map(ordersToClient));
-		// Promise.all(sendData).then((completed) => res.send(completed));
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}
@@ -50,8 +21,6 @@ app.get('/:id', async (req, res, err) => {
 	try {
 		const orders = await Orders.find({buyerId: req.user._id}).populate('productId').populate('delivery').populate('payment').populate('status').exec();
 		res.send(orders.map((order) => order.toClient()));
-		// let sendData = await Promise.all(orders.map(ordersToClient));
-		// Promise.all(sendData).then((completed) => res.send(completed));
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}
@@ -71,7 +40,6 @@ app.put('/:id', async (req, res, err) => {
 				new: true
 			},
 			function (err, docs) {
-				console.log(docs);
 				docs.id = docs._id;
 				delete docs._id;
 				res.send(docs)

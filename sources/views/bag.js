@@ -11,6 +11,11 @@ export default class DataView extends JetView{
 					autoConfig:true,
 					css:"webix_shadow_medium",
 					footer: true,
+					scheme: {
+						$init: (obj) => {
+							obj.sum = obj.price * obj.amount;
+						}
+					},
 					columns: [
 						{id: "image", header: "Image", width: 100,
 							template: (obj) => {

@@ -24,17 +24,14 @@ app.post('/status', async (req, res, err) => {
 
 app.post('/startData', role, async (req, res) => {
 	try {
-		let startDataIndex = ["inprocess", "declined"]
-		let startDataStatuses = ["In process", "Declined"]
-		for (let i = 0; i < startDataStatuses.length; i++) {
+		let startData = [{index: "inprocess", name: "In process"}, {index: "declined", name: "Declined"}];
+		startData.map(async (status) => {
 			let newStatus = await new Statuses ({
-				index: startDataIndex[i],
-				name: startDataStatuses[i]
+				index: status.index,
+				name: status.name
 			});
-			newStatus.save(function (err, docs) {
-				console.log(docs);
-			})
-		}
+			newStatus.save();
+		});
 		return res.send(startDataStatuses);
 	} catch (error) {
 		res.status(500).send("Something broke");

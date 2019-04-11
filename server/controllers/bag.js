@@ -18,21 +18,17 @@ app.get('/', async (req, res) => {
 
 app.get('/user', async (req, res) => {
 	try {
-		let sendData = [];
 		const userBag = await Bag.findOne({buyerId: req.user._id}).exec();
-		for (let i = 0; i < userBag.products.length; i++) {
-			const oneOrder = await Products.findById(userBag.products[i].productId).lean().exec();
-			oneOrder.productId = oneOrder._id;
-			oneOrder._id = userBag.products[i]._id;
-			oneOrder.amount = userBag.products[i].amount;
-			oneOrder.sum = oneOrder.price * oneOrder.amount;
-			sendData.push(oneOrder)
-		}
-		return res.json(sendData.map(function(prod) {
-			prod.id = prod._id.toHexString();
-			delete prod._id;
-			return prod;
-		}));
+		let sendData = userBag.products.map(async (oneUnitFromUserBag) => {
+			const product = await Products.findById(oneUnitFromUserBag.productId).lean().exec();
+			oneUnitFromUserBag.id = oneUnitFromUserBag._id.toHexString();
+			oneUnitFromUserBag.name = product.name;
+			oneUnitFromUserBag.price = product.price;
+		return oneUnitFromUserBag
+		})
+		Promise.all(sendData).then((sendData) => {
+			return res.send(sendData);
+		});
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}

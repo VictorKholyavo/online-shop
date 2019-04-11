@@ -15,18 +15,15 @@ app.get('/', async (req, res, err) => {
 
 app.post('/startData', role, async (req, res) => {
 	try {
-		let startDataIndex = ["cash", "card"];
-		let startDataPayment = ["Cash", "Card"];
-		for (let i = 0; i < startDataPayment.length; i++) {
+		let startData = [{index: "cash", name: "Cash"}, {index: "card", name: "Card"}];
+		startData.map(async (payment) => {
 			let newPayment = await new Payment ({
-				index: startDataIndex[i],
-				name: startDataPayment[i]
+				index: payment.index,
+				name: payment.name
 			});
-			newPayment.save(function (err, docs) {
-				console.log(docs);
-			})
-		}
-		return res.send(startDataPayment);
+			newPayment.save();
+		});
+		return res.send(startData);
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}

@@ -15,18 +15,15 @@ app.get('/', async (req, res, err) => {
 
 app.post('/startData', role, async (req, res) => {
 	try {
-		let startDataIndex = ["master", "pickup"];
-		let startDataDelivery = ["Master", "Pick Up"];
-		for (let i = 0; i < startDataDelivery.length; i++) {
+		let startData = [{index: "master", name: "Master"}, {index: "pickup", name: "Pick Up"}];
+		startData.map(async (delivery) => {
 			let newDelivery = await new Delivery ({
-				index: startDataIndex[i],
-				name: startDataDelivery[i]
+				index: delivery.index,
+				name: delivery.name
 			});
-			newDelivery.save(function (err, docs) {
-				console.log(docs);
-			})
-		}
-		return res.send(startDataDelivery);
+			newDelivery.save();
+		});
+		return res.send(startData);
 	} catch (error) {
 		res.status(500).send("Something broke");
 	}
